@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zippy Note</title>
+ 
+  <link rel="stylesheet" href="vendor/leon-mbs/zippy/assets/css/allzippy.min.css">
+        <link rel="stylesheet" href="vendor/leon-mbs/zippy/assets/css/allzcl.min.css">
+        <link rel="stylesheet" href="/assets/site.css">
+          <script src="vendor/leon-mbs/zippy/assets/js/allzippy.min.js" type="text/javascript"></script>
+        <script src="vendor/leon-mbs/zippy/assets/js/allzcl.min.js" type="text/javascript"></script>
+        <script src="/assets/tinymce/tinymce.min.js" type="text/javascript"></script>
+       
+
+
+
+    </head>
+
+    <body  >
+
+  
+        <div class="container-fluid"  >
+            <div class="row" style="padding-bottom: 10px;padding-top:10px;;">
+                <div class="col-xs-3  ">
+
+                    <span>  
+                       Zippy Note
+                    </span>
+
+                </div>
+                <div class="col-xs-9  ">
+                    <ul class="nav navbar-nav navbar-right  ">
+                          <li><a href="/aboutus">О проекте</a></li>
+                        {{^username}}
+                        <li><a href="/signin">Вход</a></li>
+                        {{/username}}
+                        {{#username}}
+                        <li class="dropdown">
+                            <a   class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span  >{{username}}</span> <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/?p=App/Pages/Account"  >Аккаунт</a></li>
+                                 <li role="separator" class="divider"></li>
+                                <li><a zippy="logout">Выход</a></li>
+                            </ul>
+                        </li>
+                        {{/username}}
+                    </ul>
+                </div>
+            </div>  
+
+            <div class="row" >
+                <div class="col-xs-8 col-xs-offset-2" >
+                    <div  class="alert alert-danger" role="alert"  zippy="errormessage"></div>
+                </div>
+                <div class="col-xs-8 col-xs-offset-2" >
+                    <div   class="alert alert-success" role="alert"  zippy="successmessage"></div>
+                </div>
+                <div class="col-xs-8 col-xs-offset-2" >
+                    <div   class="alert alert-warning" role="alert"  zippy="warnmessage"></div>
+                </div>
+                <div class="col-xs-8 col-xs-offset-2" >
+                    <div   class="alert alert-info" role="alert"  zippy="infomessage"></div>
+                </div>
+            </div>
+            <childpage/>
+
+        </div>
+    </body>
+</html>
