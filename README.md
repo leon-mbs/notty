@@ -25,4 +25,4 @@ Zippy Note
 * аттач файлов
 * отметка  избранные
  
-!(https://www.dropbox.com/s/gg1p230rou1qynn/screen.png?dl=0)
+ !(https://www.dropbox.com/s/gg1p230rou1qynn/screen.png?dl=0)
