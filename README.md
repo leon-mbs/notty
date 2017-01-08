@@ -13,7 +13,7 @@ Zippy Note
 Демо:  [http://note.zippy.com.ua/](http://note.zippy.com.ua/)
 вход admin@admin.admin admin
 
-[скриншот](https://www.dropbox.com/s/gg1p230rou1qynn/screen.png?dl=0)
+[скриншот](https://www.dropbox.com/s/s18z7pq8eq1ba24/screen.png?dl=0)
 
 
 #### Возможности
