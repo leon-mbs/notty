@@ -7,8 +7,8 @@ Zippy Note
 
 Может работать как  SAAS.
 
-Проект инспирирован [https://habrahabr.ru/post/316814/](статьей) о
-программе [](MyTetra) и пожеланиями  в  коментах
+Проект инспирирован [статьей](https://habrahabr.ru/post/316814/) о
+программе [MyTetra](http://webhamster.ru/site/page/index/articles/projectcode/105) и пожеланиями  в  коментах
 
 Демо:  [http://note.zippy.com.ua/](http://note.zippy.com.ua/)
 вход admin@admin.admin admin
