@@ -13,6 +13,9 @@ Zippy Note
 Демо:  [http://note.zippy.com.ua/](http://note.zippy.com.ua/)
 вход admin@admin.admin admin
 
+[скриншот](https://www.dropbox.com/s/gg1p230rou1qynn/screen.png?dl=0)
+
+
 #### Возможности
 * веб интерфейс
 * создание  дерева,  копирование , перемещение  узлов
@@ -25,4 +28,3 @@ Zippy Note
 * аттач файлов
 * отметка  избранные
  
- !(https://www.dropbox.com/s/gg1p230rou1qynn/screen.png?dl=0)
