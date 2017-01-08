@@ -68,9 +68,7 @@ class User extends Entity
         //упаковываем  данные в detail
         $this->details = "<detail>";
 
-        $this->details .= "<workeditem>{$this->workeditem}</workeditem>";
-        $this->details .= "<cityname>{$this->cityname}</cityname>";
-        $this->details .= "<phone>{$this->phone}</phone>";
+            $this->details .= "<phone>{$this->phone}</phone>";
 
 
         $this->details .= "</detail>";
@@ -88,9 +86,7 @@ class User extends Entity
             //распаковываем  данные из detail
             $xml = simplexml_load_string($this->details);
 
-            $this->workeditem = (int) ($xml->workeditem[0]);
-            $this->cityname = (string) ($xml->cityname[0]);
-            $this->phone = (string) ($xml->phone[0]);
+               $this->phone = (string) ($xml->phone[0]);
         }
 
         parent::afterLoad();

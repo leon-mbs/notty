@@ -16,6 +16,11 @@ class TopicNode extends \ZCL\DB\Entity
         $this->tn_id = 0;
     }
 
+    /**
+    * поиск по  тексту
+    * 
+    * @param mixed $text
+    */
     public static function searchByText($text)
     {
 
@@ -27,6 +32,11 @@ class TopicNode extends \ZCL\DB\Entity
         return $list;
     }
 
+    /**
+    * поиск по  тегу
+    * 
+    * @param mixed $tag
+    */
     public static function searchByTag($tag)
     {
 
@@ -37,6 +47,10 @@ class TopicNode extends \ZCL\DB\Entity
         return $list;
     }
 
+    /**
+    * цепочка  названий ущлов до  корня
+    * 
+    */
     public function nodes()
     {
 
