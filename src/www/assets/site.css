@@ -5,7 +5,11 @@
 }
 
 .toolbar{
-    font-size:24px;
+    font-size:22px;
     background-color: 
     #eaeaea;
+}
+
+.list-group-item {
+      padding: 5px !important;
 }

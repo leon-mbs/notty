@@ -46,6 +46,17 @@ class TopicNode extends \ZCL\DB\Entity
 
         return $list;
     }
+    
+   // поиск избранных 
+   public static function searchFav()
+    {
+
+            $sql = "  select * from topicnodeview   where topic_id in (select topic_id from topics where favorites  = 1  ) and  user_id=" . \App\System::getUser()->user_id;
+
+        $list = TopicNode::findBySql($sql);
+
+        return $list;
+    }
 
     /**
     * цепочка  названий ущлов до  корня

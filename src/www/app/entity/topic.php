@@ -39,6 +39,7 @@ class Topic extends \ZCL\DB\Entity
         $conn->Execute("delete from topicnode where node_id_id= {$node_id} ");
 
         $conn->Execute("delete from topic where topic_id not  in (select topic_id from topicnode)");
+        $conn->Execute("delete from files where topic_id not  in (select topic_id from topicnode)");
     }
 
     /**
@@ -70,8 +71,9 @@ class Topic extends \ZCL\DB\Entity
     protected function beforeDelete()
     {
         $conn = \ZCL\DB\DB::getConnect();
+        $conn->Execute("delete from files where topic_id=" . $this->topic_id);
         $conn->Execute("delete from topicnode where topic_id=" . $this->topic_id);
-
+    
         return true;
     }
 
@@ -91,7 +93,7 @@ class Topic extends \ZCL\DB\Entity
     }
 
     /**
-    * полуучить теги
+    * получить теги
     * 
     */
     public function getTags()
@@ -99,6 +101,7 @@ class Topic extends \ZCL\DB\Entity
         $conn = \ZCL\DB\DB::getConnect();
         return $conn->GetCol("select distinct tagvalue from tags where topic_id=" . $this->topic_id);
     }
+  
 
     /**
     * получить  подсказки из существующих тегов

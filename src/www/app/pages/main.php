@@ -36,6 +36,7 @@ class Main extends Base
     private $clipboard = array();
     public $_tarr;
     public $_sarr;
+    public $_farr =array();
 
     public function __construct()
     {
@@ -70,7 +71,7 @@ class Main extends Base
         $this->add(new ClickLink("topicdelete", $this, 'onTopicDelete'));
         $this->add(new BookmarkableLink("topiclink"));
 
-        //список ттопиков
+        //список  топиков
         $topiclist = $this->add(new \Zippy\Html\DataList\DataView('topiclist', new \Zippy\Html\DataList\ArrayDataSource(new \Zippy\Binding\ArrayPropertyBinding($this, '_tarr')), $this, "onRow"));
         $topiclist->setCellClickEvent($this, 'onTopic');
         $topiclist->setSelectedClass('seltopic');
@@ -89,9 +90,15 @@ class Main extends Base
 
 
 
+        //аплоад файла
+        $this->add(new Form("fileform"))->onSubmit($this, "OnFile");
+        $this->fileform->add(new \Zippy\Html\Form\File("editfile"));
+        $this->add(new \Zippy\Html\DataList\DataView('filelist', new \Zippy\Html\DataList\ArrayDataSource(new \Zippy\Binding\ArrayPropertyBinding($this, '_farr')), $this, "onFileRow"));
+ 
         //форма поиска
         $this->add(new Form("sform"))->onSubmit($this, "OnSearch");
         $this->sform->add(new TextInput("skeyword"));
+        $this->sform->add(new ClickLink("searchfav",$this,'onSearchFav'));
 
         //список  результата поиска
         $searchlist = $this->add(new \Zippy\Html\DataList\DataView('searchlist', new \Zippy\Html\DataList\ArrayDataSource(new \Zippy\Binding\ArrayPropertyBinding($this, '_sarr')), $this, "onSearchRow"));
@@ -100,6 +107,8 @@ class Main extends Base
 
 
         $this->add(new \Zippy\Html\Link\LinkList("taglist"))->onClick($this, 'OnTagList');
+        $this->add(new ClickLink("setfav"))->onClick($this, 'onFav');
+        $this->add(new Label("addfile"));
 
         $this->_tvars['editor'] = false;
     }
@@ -287,18 +296,35 @@ class Main extends Base
 
     
     //вывод строки  списка  топиков
+
     public function onRow($row)
     {
-        $item = $row->getDataitem();
-        $row->add(new Label('title', $item->title));
+        $topic = $row->getDataitem();
+        $row->add(new Label('title', $topic->title));
+        $fav =$row->add(new Label('fav'));
+        if($topic->favorites >0){
+            $fav->setAttribute("class","fa fa-star");
+        }else{
+            $fav->setAttribute("class",null);
+        }
     }
 
     //клик по топику
     public function onTopic($sender, $topic_id)
     {
 
-        // $topic = Topic::load($topic_id);   
-        // $this->content->setText($topic->content,true);
+         $this->_farr = \App\Entity\File::findByTopic($topic_id);
+         $this->filelist->Reload();
+    }
+
+   //избранное
+    public function onFav($sender)
+    {
+        $id  =     $this->topiclist->getSelectedRow();
+        $topic= Topic::load($id); 
+        $topic->favorites = $topic->favorites ==1 ?0:1;
+        $topic->save();
+        $this->ReloadTopic($this->tree->selectedNodeId());
     }
 
    
@@ -372,6 +398,49 @@ class Main extends Base
     }
 
     
+    //аплоад файла
+    public function OnFile($form)
+    {  
+         $file = $form->editfile->getFile();
+         if (strlen($file['tmp_name']) > 0) {
+            if(filesize($file['tmp_name'])/1024/1024 > 1) {
+                
+                $this->setError("Файл шлишком  большой");
+                return;
+            }
+         } else return;
+         
+         $f = new \ App\Entity\File();
+         $f->content = file_get_contents($file['tmp_name']);  
+         $f->topic_id =$this->topiclist->getSelectedRow();;
+         $imagedata = @getimagesize($file['tmp_name']);    
+         if(is_array($imagedata)){
+           $f->mime =$imagedata['mime'];  
+         }
+         $f->size = filesize($file['tmp_name']);
+         $f->filename =  $file['name'] ;
+         // $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+         $f->save();
+         
+         $this->_farr = \App\Entity\File::findByTopic($f->topic_id);
+         $this->filelist->Reload();
+            
+    }
+ 
+     public function onFileRow($row) {
+         $file= $row->getDataItem();
+         $row->add(new ClickLink("filedel",$this,"onFileDel"));
+         $row->add(new BookmarkableLink("filelink","/files/" . $file->file_id))->setValue($file->filename);
+         
+     }
+     
+     public function onFileDel($sender){
+        $file =$sender->getOwner()->getDataItem();
+        \App\Entity\File::delete($file->file_id); 
+        $this->_farr = \App\Entity\File::findByTopic($file->topic_id);
+        $this->filelist->Reload();
+     }
+    
     //обработчик поииска
     public function OnSearch($form)
     {
@@ -390,6 +459,13 @@ class Main extends Base
     {
         $text = $sender->getSelectedValue();
         $this->_sarr = TopicNode::searchByTag($text);
+        $this->searchlist->Reload();
+    }
+   //обработчик  поиска  избранных
+    public function onSearchFav($sender)
+    {
+        
+        $this->_sarr = TopicNode::searchFav();
         $this->searchlist->Reload();
     }
 
@@ -447,7 +523,8 @@ class Main extends Base
         $this->topicpaste->setVisible(false);
         $this->topicdelete->setVisible(false);
         $this->topiclink->setVisible(false);
-
+        $this->setfav->setVisible(false); 
+        $this->addfile->setVisible(false); 
 
         if ($nodeid > 0) {   //есть выделенный узел
             $this->treeadd->setVisible(true);
@@ -479,12 +556,19 @@ class Main extends Base
             $this->topicdelete->setVisible(true);
             $this->topiclink->setVisible(true);
             $this->topiclink->setLink("/topic/".$topicid);
-
+            $this->addfile->setVisible(true);;
+            $this->setfav->setVisible(true);;
+            if($topic->favorites >0){
+                $this->setfav->setAttribute("class","fa fa-star");
+            }else{
+                $this->setfav->setAttribute("class","fa fa-star-o");
+            }
 
             $tags = $topic->getTags();
             foreach ($tags as $tag) {
                 $this->taglist->addClickLink($tag, $tag);
             }
+            
         }
 
         if ($topiccp > 0) {

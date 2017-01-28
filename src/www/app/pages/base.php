@@ -53,6 +53,7 @@ class Base extends \Zippy\Html\WebPage
         }
 
         $this->_tvars["username"] = $user->user_id == 0 ? "" : $user->username;
+        $this->_tvars["admin"] = $user->username == 'admin' ;
     }
 
     public function OnExit($sender)
