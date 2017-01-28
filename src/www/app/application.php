@@ -66,13 +66,17 @@ class Application extends \Zippy\WebApplication
             "signin" => "\\App\\Pages\\UserLogin",
             "signup" => "\\App\\Pages\\Registration",
             "topic" => "\\App\\Pages\\ShowTopic",
-            "main" => "\\App\\Pages\\Main");
+             "files" => "\\App\\Pages\\LoadFile",
+             "main" => "\\App\\Pages\\Main");
 
         if ($uri == '')
             $uri = 'main';
 
         $arr = explode('/', $uri);
 
+        if ($arr[1] > 0) {
+            $this->LoadPage($pages[$arr[0]], $arr[1]);
+        } else
         if ($pages[$uri] != null) {
             $this->LoadPage($pages[$uri]);
         } else {
