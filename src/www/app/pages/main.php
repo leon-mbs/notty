@@ -9,6 +9,8 @@ use \Zippy\Html\Image;
 use \Zippy\Html\Form\Form;
 use \Zippy\Html\Form\TextInput;
 use \Zippy\Html\Form\TextArea;
+use \Zippy\Html\Form\CheckBox;
+use \Zippy\Html\Form\DropDownChoice;
 use \Zippy\Html\Form\SubmitButton;
 use \Zippy\Html\Link\RedirectLink;
 use \Zippy\Html\Link\ClickLink;
@@ -99,6 +101,8 @@ class Main extends Base
         $this->add(new Form("sform"))->onSubmit($this, "OnSearch");
         $this->sform->add(new TextInput("skeyword"));
         $this->sform->add(new ClickLink("searchfav",$this,'onSearchFav'));
+        $this->sform->add(new CheckBox("searchtitle"));
+        $this->sform->add(new DropDownChoice("searchtype"));
 
         //список  результата поиска
         $searchlist = $this->add(new \Zippy\Html\DataList\DataView('searchlist', new \Zippy\Html\DataList\ArrayDataSource(new \Zippy\Binding\ArrayPropertyBinding($this, '_sarr')), $this, "onSearchRow"));
@@ -445,12 +449,13 @@ class Main extends Base
     public function OnSearch($form)
     {
         $text = $form->skeyword->getText();
+        $t  = $form->searchtype->getValue();
         if ($text == "") {
             $this->setError('Enter text!');
             return;
         }
 
-        $this->_sarr = TopicNode::searchByText($text);
+        $this->_sarr = TopicNode::searchByText($text,$t,$form->searchtitle->isChecked());
         $this->searchlist->Reload();
     }
 

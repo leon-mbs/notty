@@ -63,7 +63,7 @@
                         <td style="width:20px;">
                            <i class="fa fa-paperclip "  style="font-weight: bolder;font-size:16px;"></i>                        
                         </td>
-                        <td > <div zippy="filelist" style="display:inline;background-color: #ddd;margin:2px;"><a zippy="filelink"></a> <a zippy="filedel" class="fa fa-remove "></a></div> 
+                        <td > <div zippy="filelist" style="display:inline;background-color: #ddd;margin:2px;"><a target="_blank" zippy="filelink"></a> <a zippy="filedel" class="fa fa-remove "></a></div> 
                         &nbsp;<a title="Добавить файл" zippy="addfile" href="#" onclick="newfile()"><i class="fa fa-plus-circle text-primary"></i></a></td>                        
                         <td style="width:20px;"><a zippy="setfav" class="fa fa-star" style="color:brown;font-weight:bold; " ></a>  </td>
                         </tr>
@@ -115,11 +115,11 @@
                 </div>
                 <div class="checkbox">
                   <label>
-                     <input   type="checkbox"> Искать только в заголовках
+                     <input  zippy="searchtitle"  type="checkbox"> Искать только в заголовках
                   </label>
                 </div>
                    <div class="input-group">
-                   <select class="form-control  input-sm" zippy>
+                   <select zippy="searchtype" class="form-control  input-sm"  >
                        <option  value="1">Фраза</option>
                        <option  value="2">Комбинация слов</option>
                    </select>

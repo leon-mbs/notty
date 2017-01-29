@@ -21,15 +21,44 @@ class TopicNode extends \ZCL\DB\Entity
     * 
     * @param mixed $text
     */
-    public static function searchByText($text)
-    {
+    public static function searchByText($text,$type,$title)
+    {   
+        global $logger;
+         
+        $arr = array();
+        $text = trim($text);
+        
+        if($type ==1){
+          $arr[] = Topic::qstr('%' . $text . '%');    
+        } else 
+        {
+            $ta = explode(' ',$text);
+            foreach($ta as $a){
+               $arr[] = Topic::qstr('%' . $a . '%');  
+            }
+            
+        }
+        
+        
+        $sql = "  select * from topicnodeview   where (1=1   ";
+        
+        foreach($arr as $t ){
+            
+            
+            if($title ==false){
+               $sql .= "and ( title like {$t}  or content like {$t} )";
+            } else{
+               $sql .=  " and  title like {$t} ";    
+            }
+        }
+        $sql .= ") and  user_id=" . \App\System::getUser()->user_id;
 
-        $text = Topic::qstr('%' . $text . '%');
-        $sql = "  select * from topicnodeview   where (title like {$text}  or content like {$text} ) and  user_id=" . \App\System::getUser()->user_id;
-
+        // $logger->info($sql);
+        
         $list = TopicNode::findBySql($sql);
 
         return $list;
+        
     }
 
     /**
