@@ -338,7 +338,9 @@ class Main extends Base
     //удалить топик
     public function onTopicDelete($sender) {
         Topic::delete($this->topiclist->getSelectedRow());
+        $this->topiclist->setSelectedRow(0);
         $this->ReloadTopic($this->tree->selectedNodeId());
+        $this->ReloadTree();
     }
 
     //вставить   в  узел топик  или  шорткат
@@ -473,7 +475,9 @@ class Main extends Base
 
         $topicid = $this->topiclist->getSelectedRow();
         $topic = Topic::load($topicid);
-
+        if($topic == false){
+            $topicid =0;
+        }
 
         $nodecp = $this->clipboard[1] == 'node' ? $this->clipboard[0] : 0;
         $topiccp = $this->clipboard[1] == 'topic' ? $this->clipboard[0] : 0;
