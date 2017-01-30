@@ -10,7 +10,7 @@ use \App\System;
 use \App\Entity\User;
 use \Zippy\Html\Label;
 
-class UserLogin extends \Zippy\Html\WebPage
+class UserLogin   extends Base
 {
 
     public $_errormsg;
@@ -19,8 +19,7 @@ class UserLogin extends \Zippy\Html\WebPage
     public function __construct()
     {
         parent::__construct();
-        $this->add(new Label("errormessage", new \Zippy\Binding\PropertyBinding($this, '_errormsg'), false, true))->setVisible(false);
-
+        
         $form = new \Zippy\Html\Form\Form('loginform');
         $form->add(new TextInput('userlogin', new Bind($this, '_login')));
         $form->add(new TextInput('userpassword', new Bind($this, '_password')));
@@ -77,25 +76,8 @@ class UserLogin extends \Zippy\Html\WebPage
         }
     }
 
-    public function setError($msg)
-    {
-        $this->_errormsg = $msg;
-        //    $this->errormessage->setVisible(strlen($msg) > 0);
-    }
+    
 
-    protected function beforeRender()
-    {
-        $this->errormessage->setVisible(strlen($this->_errormsg) > 0);
-    }
-
-    protected function afterRender()
-    {
-        $this->setError('');
-    }
-
-    protected function isError()
-    {
-        return strlen($this->_errormsg) > 0 ? true : false;
-    }
+    
 
 }

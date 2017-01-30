@@ -48,8 +48,13 @@ class Base extends \Zippy\Html\WebPage
             }
         }
         $user = System::getUser();
-        if ($user->user_id == 0) {
-            App::Redirect("\\App\\Pages\\UserLogin");
+        if ($user->user_id == 0  ) {
+            if($this instanceof UserLogin ){
+                
+            } else  {
+              App::Redirect("\\App\\Pages\\UserLogin");    
+            }
+            
         }
 
         $this->_tvars["username"] = $user->user_id == 0 ? "" : $user->username;
@@ -68,7 +73,7 @@ class Base extends \Zippy\Html\WebPage
     public function setError($msg)
     {
         $this->_errormsg = $msg;
-        //    $this->errormessage->setVisible(strlen($msg) > 0);
+ 
     }
 
     public function setSuccess($msg)

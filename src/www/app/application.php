@@ -65,9 +65,7 @@ class Application extends \Zippy\WebApplication
         $pages = array(
             "signin" => "\\App\\Pages\\UserLogin",
             "signup" => "\\App\\Pages\\Registration",
-            "topic" => "\\App\\Pages\\ShowTopic",
-             "files" => "\\App\\Pages\\LoadFile",
-             "main" => "\\App\\Pages\\Main");
+            "main" => "\\App\\Pages\\Main");
 
         if ($uri == '')
             $uri = 'main';
