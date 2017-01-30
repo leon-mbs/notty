@@ -9,8 +9,7 @@ namespace App;
 class Application extends \Zippy\WebApplication
 {
 
-    public function __construct($homepage)
-    {
+    public function __construct($homepage) {
         parent::__construct($homepage);
 
         $this->set404('templates/404.html');
@@ -22,8 +21,7 @@ class Application extends \Zippy\WebApplication
      * @param mixed $name
      * @param mixed $layout
      */
-    public function getTemplate($name, $layout = '')
-    {
+    public function getTemplate($name, $layout = '') {
 
         $path = '';
         $name = ltrim($name, '\\');
@@ -53,8 +51,7 @@ class Application extends \Zippy\WebApplication
      *
      * @param mixed $uri
      */
-    public function Route($uri)
-    {
+    public function Route($uri) {
 
 
         if (preg_match('/^[-#a-zA-Z0-9\/_]+$/', $uri) == 0) {
@@ -89,8 +86,7 @@ class Application extends \Zippy\WebApplication
      * Редирект на  страницу с  ошибкой
      *
      */
-    public static function RedirectError($message)
-    {
+    public static function RedirectError($message) {
         self::$app->getResponse()->Redirect("\\App\\Pages\\Error", $message);
         // Application::Redirect404();
     }
@@ -99,8 +95,7 @@ class Application extends \Zippy\WebApplication
      * Редирект непосредственно  по  адресу
      *
      */
-    public static function toPage($url)
-    {
+    public static function toPage($url) {
         self::$app->getResponse()->toPage($url);
         self::$app->getResponse()->output();
     }

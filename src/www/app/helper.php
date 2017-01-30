@@ -18,8 +18,7 @@ class Helper
      * @param mixed $password
      * @return  boolean
      */
-    public static function login($email, $password = null)
-    {
+    public static function login($email, $password = null) {
 
         $user = User::findOne("  email='{$email}' ");
 
@@ -39,15 +38,13 @@ class Helper
      *
      * @param mixed $login
      */
-    public static function existsLogin($email)
-    {
+    public static function existsLogin($email) {
         $list = \App\Entity\User::find("  email='{$email}' ");
 
         return count($list) > 0;
     }
 
-    public static function loadEmail($template, $keys = array())
-    {
+    public static function loadEmail($template, $keys = array()) {
         global $logger;
 
         $templatepath = _ROOT . 'templates/email/' . $template . '.tpl';
@@ -65,8 +62,7 @@ class Helper
         return $template;
     }
 
-    public static function sendLetter($template, $email, $subject = "")
-    {
+    public static function sendLetter($template, $email, $subject = "") {
 
 
         $_config = parse_ini_file(_ROOT . 'config/config.ini', true);
@@ -96,8 +92,7 @@ class Helper
          */
     }
 
-    public static function getCategoryList()
-    {
+    public static function getCategoryList() {
         $list = array();
         $conn = \ZCL\DB\DB::getConnect();
         $rs = $conn->Execute("select * from categories order  by  categoryname");

@@ -23,8 +23,7 @@ class Account extends Base
 
     private $_user;
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         System::checkLogined();
         $this->_user = System::getUser();
@@ -32,15 +31,14 @@ class Account extends Base
         $this->add(new Form('profileform'))->onSubmit($this, 'profileformOnSubmit');
         $this->profileform->add(new TextInput('username', $this->_user->username));
         $this->profileform->add(new TextInput('email', $this->_user->email));
-     
+
         $this->profileform->add(new TextInput('password'));
         $this->profileform->add(new TextInput('confirm'));
-    
-       // $this->_tvars['notadmin'] = $this->_user->username != 'admin';
+
+        // $this->_tvars['notadmin'] = $this->_user->username != 'admin';
     }
 
-    public function profileformOnSubmit($sender)
-    {
+    public function profileformOnSubmit($sender) {
         $this->setError('');
 
         $confirm = $this->profileform->confirm->getText();
@@ -64,7 +62,7 @@ class Account extends Base
             }
         }
 
-     
+
 
 
 
@@ -78,7 +76,7 @@ class Account extends Base
                 $this->_user->userpass = (\password_hash($password, PASSWORD_DEFAULT));
             }
             $this->_user->hashdata = "";
-  
+
             $this->_user->Save();
             System::setUser($this->_user);
             $this->setSuccess('Изменения сохранены');

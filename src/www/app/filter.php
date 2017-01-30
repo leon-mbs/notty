@@ -11,18 +11,15 @@ class Filter
 
     private $data = array();
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->searchtype = 1;
     }
 
-    public final function __set($name, $value)
-    {
+    public final function __set($name, $value) {
         $this->data[$name] = $value;
     }
 
-    public final function __get($name)
-    {
+    public final function __get($name) {
         return $this->data[$name];
     }
 
@@ -32,8 +29,7 @@ class Filter
      * @param mixed $name
      * @return Filter
      */
-    public static function getFilter($name)
-    {
+    public static function getFilter($name) {
         $filter = System::getSession()->filter[$name];
 
         if (!isset($filter)) {
@@ -48,8 +44,7 @@ class Filter
      * clear  all  data
      *
      */
-    public function clean()
-    {
+    public function clean() {
 
         $this->data = array();
     }

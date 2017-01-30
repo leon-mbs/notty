@@ -2,16 +2,14 @@
 
 namespace App\Pages;
 
-use \App\System\Application as App;
-use \App\System\System;
-use \App\System\Helper;
+use \App\Application as App;
+use \App\System;
+use \App\Helper;
 use \App\Entity\User;
 use \Zippy\Html\Link\ClickLink;
 use \Zippy\Html\Link\RedirectLink;
-use \Zippy\Html\Link\BookmarkableLink;
 use \Zippy\Html\Panel;
 use \Zippy\Html\Label;
-use \Zippy\Html\Form\TextInput as TextInput;
 
 class Base extends \Zippy\Html\WebPage
 {
@@ -19,6 +17,7 @@ class Base extends \Zippy\Html\WebPage
     public $_errormsg;
     public $_successmsg;
     public $_warnmsg;
+    public $_infomsg;
 
     public function __construct() {
         parent::__construct();
@@ -26,7 +25,7 @@ class Base extends \Zippy\Html\WebPage
         $this->add(new Label("errormessage", new \Zippy\Binding\PropertyBinding($this, '_errormsg'), false, true))->setVisible(false);
         $this->add(new Label("successmessage", new \Zippy\Binding\PropertyBinding($this, '_successmsg'), false, true))->setVisible(false);
         $this->add(new Label("warnmessage", new \Zippy\Binding\PropertyBinding($this, '_warnmsg'), false, true))->setVisible(false);
-
+        $this->add(new Label("infomessage", new \Zippy\Binding\PropertyBinding($this, '_infomsg'), false, true))->setVisible(false);
 
 
 
@@ -43,20 +42,21 @@ class Base extends \Zippy\Html\WebPage
 
             if ($user instanceof User) {
 
-                $user->lastlogin = time();
-                $user->save();
+
                 System::setUser($user);
             }
         }
-
-
+        $user = System::getUser();
+        if ($user->user_id == 0) {
+            if ($this instanceof UserLogin) {
+                
+            } else {
+                App::Redirect("\\App\\Pages\\UserLogin");
+            }
+        }
 
         $this->_tvars["username"] = $user->user_id == 0 ? "" : $user->username;
-        $this->_tvars["admin"] = $user->userrole == User::ROLE_ADMIN;
-        $this->_tvars["clubber"] = $user->userrole == User::ROLE_CLUBBER;
-        $this->_tvars["vendor"] = $user->userrole == User::ROLE_VENDOR;
-        $this->_tvars["organizer"] = $user->userrole == User::ROLE_ORGANIZER;
-        $this->_tvars["avatar"] = $user->avatar;
+        $this->_tvars["admin"] = $user->username == 'admin';
     }
 
     public function OnExit($sender) {
@@ -64,17 +64,19 @@ class Base extends \Zippy\Html\WebPage
         setcookie("remember", '', 0, '/');
         System::setUser(new \App\Entity\User());
         $this->_tvars["username"] = "";
-        setcookie("remember", "");
-        App::toPage("/");
+        App::Redirect("\\App\\Pages\\UserLogin");
     }
 
     public function setError($msg) {
         $this->_errormsg = $msg;
-        //    $this->errormessage->setVisible(strlen($msg) > 0);
     }
 
     public function setSuccess($msg) {
         $this->_successmsg = $msg;
+    }
+
+    public function setInfo($msg) {
+        $this->_infomsg = $msg;
     }
 
     public function setWarn($msg) {
@@ -84,18 +86,19 @@ class Base extends \Zippy\Html\WebPage
     protected function beforeRender() {
         $this->errormessage->setVisible(strlen($this->_errormsg) > 0);
         $this->successmessage->setVisible(strlen($this->_successmsg) > 0);
+        $this->infomessage->setVisible(strlen($this->_infomsg) > 0);
         $this->warnmessage->setVisible(strlen($this->_warnmsg) > 0);
     }
 
     protected function afterRender() {
         $this->setError('');
         $this->setSuccess('');
-
+        $this->setInfo('');
         $this->setWarn('');
     }
 
     protected function isError() {
-        return strlen($this->_errormsg) > 0;
+        return strlen($this->_errormsg) > 0 ? true : false;
     }
 
 }

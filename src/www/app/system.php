@@ -15,8 +15,7 @@ class System
      * Возвращает  текущего  юзера
      * @return  User
      */
-    public static function getUser()
-    {
+    public static function getUser() {
         $user_id = Session::getSession()->user_id;
         if ($user_id == null) {
             $user = new User();
@@ -31,8 +30,7 @@ class System
      *
      * @param User $user
      */
-    public static function setUser(User $user)
-    {
+    public static function setUser(User $user) {
         Session::getSession()->user_id = $user->user_id;
     }
 
@@ -40,8 +38,7 @@ class System
      * Возвращает  сессию
      * @return  Session
      */
-    public static function getSession()
-    {
+    public static function getSession() {
 
         return Session::getSession();
     }
@@ -50,8 +47,7 @@ class System
      * Возвращает набор  параметром  по  имени набора
 
      */
-    public static function getOptions()
-    {
+    public static function getOptions() {
 
 
         $conn = \ZCL\DB\DB::getConnect();
@@ -70,8 +66,7 @@ class System
      * @param mixed $group
      * @param mixed $options
      */
-    public static function setOptions($options)
-    {
+    public static function setOptions($options) {
 
         $conn = \ZCL\DB\DB::getConnect();
         foreach ($options as $key => $value) {
@@ -86,8 +81,7 @@ class System
      * @param mixed $role  требуемая  роль
      * @param mixed $uri  адрес  перехода после  логина
      */
-    public static function checkLogined($role = -1, $uri = null)
-    {
+    public static function checkLogined($role = -1, $uri = null) {
         $user = System::getUser();
         if ($user->user_id == 0) {
             \App\System\Session::getSession()->topage = $uri;

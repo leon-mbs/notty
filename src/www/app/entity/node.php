@@ -15,15 +15,13 @@ use \ZCL\DB\TreeEntity;
 class Node extends TreeEntity
 {
 
-    protected function init()
-    {
+    protected function init() {
         $this->node_id = 0;
         $this->pid = 0;
         $this->mpath = '';
     }
 
-    protected function beforeDelete()
-    {
+    protected function beforeDelete() {
         $conn = \ZCL\DB\DB::getConnect();
         $conn->Execute("delete from topicnode where node_id=" . $this->node_id);
 
@@ -34,8 +32,7 @@ class Node extends TreeEntity
      * получение  родительских узловж
      * 
      */
-    public function getParents()
-    {
+    public function getParents() {
 
         // $ids = str_split ($this->mpath,8);   ;
 

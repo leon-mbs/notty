@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Pages ;
+namespace App\Pages;
 
 use \App\Entity\User;
 use \App\System;
@@ -24,15 +24,15 @@ class Users extends \App\Pages\Base
     public function __construct() {
         parent::__construct();
 
-        if(System::getUser()->username != 'admin'){
-           Application::toPage("/"); 
-           return;
+        if (System::getUser()->username != 'admin') {
+            Application::toPage("/");
+            return;
         }
 
         $plist = $this->add(new Panel('plist'));
         $plist->add(new Form('filterform'))->onSubmit($this, 'filterOnSubmit');
         $plist->filterform->add(new TextInput('search'));
-        
+
 
         $this->_ds = new EntityDataSource("\\App\\Entity\\User", "username <>  'admin'", "username asc");
         $plist->add(new DataView("userrow", $this->_ds, $this, 'OnAddUserRow'));
@@ -55,7 +55,6 @@ class Users extends \App\Pages\Base
         $item = $datarow->getDataItem();
         $datarow->add(new \Zippy\Html\Link\ClickLink("username", $this, 'OnEdit'))->setValue($item->username);
         $datarow->add(new \Zippy\Html\Label("created", date('d.m.Y', $item->createdon)));
-        
     }
 
     public function filterOnSubmit($sender) {
@@ -65,7 +64,7 @@ class Users extends \App\Pages\Base
             $search = User::qstr('%' . $search . '%');
             $where .= "  and  username like {$search}  ";
         }
- 
+
         $this->_ds->setWhere($where);
         $this->plist->userrow->Reload();
     }
