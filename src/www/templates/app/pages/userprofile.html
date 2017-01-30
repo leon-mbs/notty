@@ -1,0 +1,89 @@
+<html>
+
+<body>
+
+
+<div class="row">
+<div class="col-md-4 col-sm-6">
+      <div class="box"   >
+         <div class="box-body"   >
+     <h3>Account data</h3>
+      <form role="form" zippy="accform">
+         <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" zippy="email" required="required">
+        </div>
+        <div class="form-group">
+            <label for="username">Name</label>
+            <input type="text" class="form-control" zippy="username" required="required">
+        </div>
+          {{^admin}}
+          <div class="form-group">
+            <label for="role" >Role </label>
+            <select class="form-control"   zippy="role">
+            <option value="0">Select role</option>
+            </select>
+  
+   
+          </div>  {{/admin}} 
+        <button type="submit"   class="btn btn-default">Save</button>
+       </form>
+         
+</div>
+</div>
+</div>
+<div class="col-md-3 col-sm-6">
+     <div class="box"   >
+         <div class="box-body"   >
+        <h3>Avatar</h3>                        
+    <img zippy="avatarprev" style="width:128px;height:128px;"  class="img-circle"   >
+     <form role="form" zippy="avform" enctype="multipart/form-data" >
+      <div class="form-group">
+ 
+      <input type="file" zippy="avatar"  class="form-control input-sm"   >
+
+        </div> 
+               <button type="submit"   class="btn btn-default">Save</button>
+    </form>
+    </div>
+</div>
+ <div class="box"   >
+         <div class="box-body"   >
+    <h3>Change password</h3>
+    <form role="form" zippy="passform">
+ 
+
+          <div class="form-group">
+            <label for="userpassword">Password</label>
+            <input type="password" class="form-control" zippy="userpassword" required="required">
+        </div>
+      <div class="form-group">
+            <label for="confirmpassword">Confirm</label>
+            <input type="password" class="form-control" zippy="confirmpassword" required="required">
+        </div>
+
+        <button type="submit"   class="btn btn-default">Save</button>
+    </form>  
+    </div>
+</div>
+
+</div>
+</div>
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

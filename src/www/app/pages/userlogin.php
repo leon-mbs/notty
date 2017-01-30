@@ -4,22 +4,22 @@ namespace App\Pages;
 
 use \Zippy\Binding\PropertyBinding as Bind;
 use \Zippy\Html\Form\TextInput as TextInput;
-use \App\Application as App;
-use \App\Helper;
-use \App\System;
+use \App\System\Application as App;
+use \App\System\Helper;
+use \App\System\System;
 use \App\Entity\User;
-use \Zippy\Html\Label;
 
-class UserLogin   extends Base
+class UserLogin extends Base
 {
 
-    public $_errormsg;
     public $_login, $_password;
 
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
-        
+
+
+
+
         $form = new \Zippy\Html\Form\Form('loginform');
         $form->add(new TextInput('userlogin', new Bind($this, '_login')));
         $form->add(new TextInput('userpassword', new Bind($this, '_password')));
@@ -27,10 +27,14 @@ class UserLogin   extends Base
         $form->add(new \Zippy\Html\Form\SubmitButton('submit'))->onClick($this, 'onsubmit');
 
         $this->add($form);
+
+        $user = System::getUser();
+        if ($user->user_id > 0) {
+            App::Redirect("\\App\\Pages\\Main");
+        }
     }
 
-    public function onsubmit($sender)
-    {
+    public function onsubmit($sender) {
         $this->setError('');
         if ($this->_login == '') {
             $this->setError('Введите логин');
@@ -54,10 +58,10 @@ class UserLogin   extends Base
                     $_config = parse_ini_file(_ROOT . 'config/config.ini', true);
                     setcookie("remember", $user->user_id . '_' . md5($user->user_id . $_config['common']['salt']), time() + 60 * 60 * 24 * 30);
                 }
-                if (\App\Session::getSession()->topage == null) {
+                if (\App\System\Session::getSession()->topage == null) {
                     App::RedirectHome();
                 } else {
-                    App::toPage(\App\Session::getSession()->topage);
+                    App::toPage(\App\System\Session::getSession()->topage);
                 }
             } else {
                 $this->setError('Неверный  логин');
@@ -67,17 +71,12 @@ class UserLogin   extends Base
         $this->_password = '';
     }
 
-    public function beforeRequest()
-    {
+    public function beforeRequest() {
         parent::beforeRequest();
 
         if (System::getUser()->user_id > 0) {
             App::RedirectHome();
         }
     }
-
-    
-
-    
 
 }

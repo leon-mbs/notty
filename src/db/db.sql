@@ -1,107 +1,111 @@
 
 SET NAMES 'utf8';
 
-DROP TABLE IF EXISTS files;
-CREATE TABLE files (
-  file_id INT(11) NOT NULL AUTO_INCREMENT,
-  topic_id INT(11) NOT NULL,
-  content BLOB NOT NULL,
-  details VARCHAR(255) NOT NULL,
-  PRIMARY KEY (file_id),
-  INDEX topic_id (topic_id)
-)
-ENGINE = MYISAM
-
-CHARACTER SET utf8
-COLLATE utf8_general_ci;
-
-DROP TABLE IF EXISTS nodes;
-CREATE TABLE nodes (
-  node_id INT(11) NOT NULL AUTO_INCREMENT,
-  pid INT(11) NOT NULL,
-  title VARCHAR(50) NOT NULL,
-  mpath VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  user_id INT(11) DEFAULT NULL,
-  PRIMARY KEY (node_id),
-  INDEX user_id (user_id)
-)
-ENGINE = MYISAM
-
-CHARACTER SET utf8
-COLLATE utf8_general_ci;
-
-DROP TABLE IF EXISTS tags;
-CREATE TABLE tags (
-  tag_id INT(11) NOT NULL AUTO_INCREMENT,
-  topic_id INT(11) NOT NULL,
-  tagvalue VARCHAR(255) NOT NULL,
-  PRIMARY KEY (tag_id),
-  INDEX topic_id (topic_id)
-)
-ENGINE = MYISAM
-
-CHARACTER SET utf8
-COLLATE utf8_general_ci;
-
-DROP TABLE IF EXISTS topicnode;
-CREATE TABLE topicnode (
-  topic_id INT(11) NOT NULL,
-  node_id INT(11) NOT NULL,
-  tn_id INT(11) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (tn_id),
-  INDEX node_id (node_id),
-  INDEX topic_id (topic_id)
-)
-ENGINE = MYISAM
-
-CHARACTER SET utf8
-COLLATE utf8_general_ci;
-
-DROP TABLE IF EXISTS topics;
-CREATE TABLE topics (
-  topic_id INT(11) NOT NULL AUTO_INCREMENT,
+DROP TABLE IF EXISTS blog;
+CREATE TABLE blog (
+  blog_id INT(11) NOT NULL AUTO_INCREMENT,
   title VARCHAR(255) NOT NULL,
+  subtitle VARCHAR(255) NOT NULL,
   content TEXT NOT NULL,
-  favorites TINYINT(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (topic_id)
+  titleimage MEDIUMINT(9) NOT NULL,
+  createdon DATETIME NOT NULL,
+  better INT(1) DEFAULT NULL,
+  PRIMARY KEY (blog_id)
 )
 ENGINE = MYISAM
+AUTO_INCREMENT = 10
+AVG_ROW_LENGTH = 88
+CHARACTER SET utf8
+COLLATE utf8_general_ci;
 
+DROP TABLE IF EXISTS blog_category;
+CREATE TABLE blog_category (
+  category_id INT(11) NOT NULL AUTO_INCREMENT,
+  category_name VARCHAR(255) NOT NULL,
+  PRIMARY KEY (category_id)
+)
+ENGINE = MYISAM
+AUTO_INCREMENT = 4
+AVG_ROW_LENGTH = 22
+CHARACTER SET utf8
+COLLATE utf8_general_ci;
 
+DROP TABLE IF EXISTS blog_comments;
+CREATE TABLE blog_comments (
+  comment_id INT(11) NOT NULL AUTO_INCREMENT,
+  blog_id INT(11) NOT NULL DEFAULT 0,
+  author VARCHAR(50) NOT NULL DEFAULT '0',
+  content TEXT DEFAULT NULL,
+  createdon DATETIME DEFAULT NULL,
+  moderated INT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (comment_id)
+)
+ENGINE = MYISAM
+AUTO_INCREMENT = 10
+AVG_ROW_LENGTH = 55
+CHARACTER SET utf8
+COLLATE utf8_general_ci;
+
+DROP TABLE IF EXISTS images;
+CREATE TABLE images (
+  image_id INT(11) NOT NULL AUTO_INCREMENT,
+  content BLOB NOT NULL,
+  mime VARCHAR(16) NOT NULL,
+  PRIMARY KEY (image_id)
+)
+ENGINE = MYISAM
+AUTO_INCREMENT = 8
+AVG_ROW_LENGTH = 29526
+CHARACTER SET utf8
+COLLATE utf8_general_ci;
+
+DROP TABLE IF EXISTS services;
+CREATE TABLE services (
+  service_id INT(11) NOT NULL AUTO_INCREMENT,
+  user_id INT(11) NOT NULL,
+  servicetype INT(11) NOT NULL,
+  details TEXT NOT NULL,
+  city VARCHAR(255) NOT NULL,
+  city_id VARCHAR(255) NOT NULL,
+  PRIMARY KEY (service_id)
+)
+ENGINE = MYISAM
+AUTO_INCREMENT = 7
+AVG_ROW_LENGTH = 512
 CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
   user_id INT(11) NOT NULL AUTO_INCREMENT,
-  username VARCHAR(50) NOT NULL,
-  email VARCHAR(50) NOT NULL,
-  userpass VARCHAR(50) NOT NULL,
-  PRIMARY KEY (user_id)
+  userpass VARCHAR(255) NOT NULL,
+  createdon DATE NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  userstate TINYINT(4) NOT NULL,
+  avatar VARCHAR(255) DEFAULT NULL,
+  details TEXT NOT NULL,
+  lastlogin DATETIME DEFAULT NULL,
+  username VARCHAR(255) NOT NULL,
+  userrole INT(11) NOT NULL,
+  PRIMARY KEY (user_id),
+  UNIQUE INDEX email (email)
 )
 ENGINE = MYISAM
+AUTO_INCREMENT = 3
+AVG_ROW_LENGTH = 352
 CHARACTER SET utf8
 COLLATE utf8_general_ci;
 
 
 
-DROP VIEW IF EXISTS nodesview CASCADE;
+DROP VIEW IF EXISTS blogview CASCADE;
 CREATE OR REPLACE
-
-VIEW nodesview
+VIEW blogview
 AS
-	select `nodes`.`node_id` AS `node_id`,`nodes`.`pid` AS `pid`,`nodes`.`title` AS `title`,`nodes`.`mpath` AS `mpath`,`nodes`.`user_id` AS `user_id`,(select count(`topicnode`.`topic_id`) AS `Count(topic_id)` from `topicnode` where (`topicnode`.`node_id` = `nodes`.`node_id`)) AS `tcnt` from `nodes`;
+	select `blog`.`blog_id` AS `blog_id`,`blog`.`title` AS `title`,`blog`.`subtitle` AS `subtitle`,`blog`.`content` AS `content`,`blog`.`titleimage` AS `titleimage`,`blog`.`createdon` AS `createdon`,`blog`.`better` AS `better` from `blog`;
 
-DROP VIEW IF EXISTS topicnodeview CASCADE;
+DROP VIEW IF EXISTS usersview CASCADE;
 CREATE OR REPLACE
-
-VIEW topicnodeview
+VIEW usersview
 AS
-	select `topicnode`.`topic_id` AS `topic_id`,`topicnode`.`node_id` AS `node_id`,`topicnode`.`tn_id` AS `tn_id`,`topics`.`title` AS `title`,`nodes`.`user_id` AS `user_id`,`topics`.`content` AS `content` from ((`topics` join `topicnode` on((`topics`.`topic_id` = `topicnode`.`topic_id`))) join `nodes` on((`nodes`.`node_id` = `topicnode`.`node_id`)));
-
-DROP VIEW IF EXISTS topicsview CASCADE;
-CREATE OR REPLACE
-
-VIEW topicsview
-AS
-	select `t`.`topic_id` AS `topic_id`,`t`.`title` AS `title`,`t`.`content` AS `content`,`t`.`favorites` AS `favorites` from `topics` `t`;
+	select `users`.`user_id` AS `user_id`,`users`.`userpass` AS `userpass`,`users`.`createdon` AS `createdon`,`users`.`userrole` AS `userrole`,`users`.`email` AS `email`,`users`.`userstate` AS `userstate`,`users`.`avatar` AS `avatar`,`users`.`details` AS `details`,`users`.`lastlogin` AS `lastlogin`,`users`.`username` AS `username` from `users`;
