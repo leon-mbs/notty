@@ -6,7 +6,7 @@
         <div class="row">
             <div class="col-md-5 col-sm-12" >
                 <div   class="toolbar">
-                    &nbsp;<a title="Новый узел" style="cursor:pointer;" zippy="treeadd" onclick="newnode()"><i class="fa fa-plus-circle"></i></a>  
+                    &nbsp;<a   class="btn btn-primary btn-sm" style style="cursor:pointer;" zippy="treeadd" onclick="newnode()"><i class="fa fa-plus-circle"></i> Новый узел</a>  
                     <a title="Редактировать узел" style="cursor:pointer;" zippy="treeedit" onclick="editnode()"><i class="fa fa-edit"></i></a>  
                     <a title="Вырезать" style="cursor:pointer;"   zippy="treecut"><i class="fa fa-cut"></i></a>  
                     <a title="Вставить" style="cursor:pointer;"    zippy="treepaste"><i class="fa fa-paste"></i></a>  
@@ -22,7 +22,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <div     class="toolbar">
-                            &nbsp;<a title="Новый топик" style="cursor:pointer;"   zippy="topicadd"  ><i class="fa fa-plus-circle"></i></a>  
+                            &nbsp;<a class="btn btn-primary btn-sm" style="cursor:pointer;"   zippy="topicadd"  ><i class="fa fa-plus-circle"></i> Новый топик</a>  
                             <a title="Редактировать" style="cursor:pointer;"   zippy="topicedit"  ><i class="fa fa-edit"></i></a>  
                             <a title="Вырезать" style="cursor:pointer;"   zippy="topiccut"><i class="fa fa-cut"></i></a>  
                             <a title="Копировать " style="cursor:pointer;"   zippy="topiccopy"><i class="fa fa-copy"></i></a>  
@@ -34,8 +34,9 @@
 
                         <table  class="table  table-condensed  ">
                             <tr zippy="topiclist" >
-                                <td style="width:100%" zippy="title"></td>
                                 <td style="width:30px" align="center" ><span zippy="fav" ></span></td>
+                                <td style="width:100%" zippy="title"></td>
+                                
                             </tr>
                         </table>
 
@@ -57,14 +58,14 @@
 
                         <table class="table">
                             <tr>
-                                <td style="width:20px;"><i class="fa fa-tags " style="font-weight: bolder;font-size:16px;"></i> </td>
+                                <td style="width:20px;"><i title="Тэги" class="fa fa-tags " style="font-weight: bolder;font-size:16px;"></i> </td>
                                 <td ><span zippy="taglist"></span></td>
 
                                 <td style="width:20px;">
-                                    <i class="fa fa-paperclip "  style="font-weight: bolder;font-size:16px;"></i>                        
+                                    <i title="Прикрепленные файлы" class="fa fa-paperclip "  style="font-weight: bolder;font-size:16px;"></i>                        
                                 </td>
                                 <td > <div zippy="filelist" style="display:inline;background-color: #ddd;margin:2px;"><a target="_blank" zippy="filelink"></a> <a zippy="filedel" class="fa fa-remove "></a></div> 
-                                    &nbsp;<a title="Добавить файл" zippy="addfile" href="#" onclick="newfile()"><i class="fa fa-plus-circle text-primary"></i></a></td>                        
+                                    &nbsp;<a title="Добавить файл" zippy="addfile" href="#" onclick="newfile()"><i class="fa fa-upload text-primary"></i></a></td>                        
                                 <td style="width:20px;"><a zippy="setfav" class="fa fa-star" style="color:brown;font-weight:bold; " ></a>  </td>
                             </tr>
                         </table>  
@@ -115,7 +116,7 @@
                         </div>
                         <div class="checkbox">
                             <label>
-                                <input  zippy="searchtitle"  type="checkbox"> Искать только в заголовках
+                                <input  zippy="searchtitle"  type="checkbox">только в заголовках
                             </label>
                         </div>
                         <div class="input-group">
