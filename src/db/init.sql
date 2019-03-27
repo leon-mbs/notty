@@ -1,1 +1,0 @@
-INSERT INTO `users` (`user_id`, `userpass`, `createdon`, `email`, `userstate`, `avatar`, `details`, `lastlogin`, `username`, `userrole`) VALUES(1, 'admin', '2016-09-23', 'admin@admin.admin', 0, '/assets/img/noimage.jpg', '<detail><vendorresume><![CDATA[]]></vendorresume></detail>', '2017-01-22 12:38:52', 'admin', 1);
