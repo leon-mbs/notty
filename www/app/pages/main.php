@@ -107,10 +107,10 @@ class Main extends Base
         $searchlist->setCellClickEvent($this, 'onSearchTopic');
         $searchlist->setSelectedClass('table-success');
 
-
-        $this->add(new \Zippy\Html\Link\LinkList("taglist"))->onClick($this, 'OnTagList');
-        $this->add(new ClickLink("setfav"))->onClick($this, 'onFav');
-        $this->add(new Label("addfile"));
+        $this->add(new Panel("tpanel"));
+        $this->tpanel->add(new \Zippy\Html\Link\LinkList("taglist"))->onClick($this, 'OnTagList');
+        $this->tpanel->add(new ClickLink("setfav"))->onClick($this, 'onFav');
+        $this->tpanel->add(new Label("addfile"));
 
         $this->_tvars['editor'] = false;
     }
@@ -288,7 +288,7 @@ class Main extends Base
         $row->add(new Label('title', $topic->title));
         //$row->add(new ClickLink('title', $this,'onTopic'));
         $fav = $row->add(new Label('fav'));
-        $fav->isVisible($topic->favorites > 0);
+        $fav->setVisible($topic->favorites > 0);
    
     }
 
@@ -308,7 +308,8 @@ class Main extends Base
  
         $topic->favorites = $topic->favorites == 1 ? 0 : 1;
         $topic->save();
-        $this->ReloadTopic($this->tree->selectedNodeId());
+        //$this->ReloadTopic($this->tree->selectedNodeId());
+        $this->topiclist->Reload();
     }
 
     //вырезать топик в  клипборд
@@ -487,6 +488,7 @@ class Main extends Base
         $nodecp = $this->clipboard[1] == 'node' ? $this->clipboard[0] : 0;
         $topiccp = $this->clipboard[1] == 'topic' ? $this->clipboard[0] : 0;
 
+        $this->tpanel->setVisible(false);
         $this->treeadd->setVisible(false);
         $this->treeedit->setVisible(false);
         $this->treecut->setVisible(false);
@@ -500,8 +502,8 @@ class Main extends Base
         $this->topicpaste->setVisible(false);
         $this->topicdelete->setVisible(false);
         $this->topiclink->setVisible(false);
-        $this->setfav->setVisible(false);
-        $this->addfile->setVisible(false);
+        $this->tpanel->setfav->setVisible(false);
+        $this->tpanel->addfile->setVisible(false);
 
         if ($nodeid > 0) {   //есть выделенный узел
             $this->treeadd->setVisible(true);
@@ -523,9 +525,11 @@ class Main extends Base
         }
 
         $this->content->setText('');
-        $this->taglist->Clear();
+        $this->tpanel->taglist->Clear();
         if ($topicid > 0) {
+            $this->tpanel->setVisible(true);
             $this->content->setText($topic->content, true);
+
             $this->topicedit->setVisible(true);
             $this->topiccut->setVisible(true);
             $this->topiccopy->setVisible(true);
@@ -535,19 +539,19 @@ class Main extends Base
             $this->topiclink->setVisible(true);
             $this->topiclink->setLink("/topic/" . $topicid);
               }
-            $this->addfile->setVisible(true);
+            $this->tpanel->addfile->setVisible(true);
             ;
-            $this->setfav->setVisible(true);
+            $this->tpanel->setfav->setVisible(true);
             ;
             if ($topic->favorites > 0) {
-                $this->setfav->setAttribute("style", "color:brown;");
+                $this->tpanel->setfav->setAttribute("style", "color:brown;");
             } else {
-                $this->setfav->setAttribute("style", "color:gray;");
+                $this->tpanel->setfav->setAttribute("style", "color:gray;");
             }
 
             $tags = $topic->getTags();
             foreach ($tags as $tag) {
-                $this->taglist->addClickLink($tag, $tag);
+                $this->tpanel->taglist->addClickLink($tag, $tag);
             }
         }
 

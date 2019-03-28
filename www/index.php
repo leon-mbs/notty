@@ -13,8 +13,7 @@ try {
 
         \ZCL\DB\DB::getConnect()->CompleteTrans(false); // откат транзакции
     }
-        $msg =$e->getMessage();
-        $logger->error($e->getMessage(),$e->getTrace());
-        \App\Application::Redirect('\\App\\Pages\\Error', $e->getMessage());
+    $msg = $e->getMessage();
+    $logger->error($e->getMessage(), $e->getTrace());
+    \App\Application::Redirect('\\App\\Pages\\Error', $e->getMessage());
 }
-

@@ -1,20 +1,22 @@
 body {
-    font-family:"Roboto","Helvetica Neue"  ;
-      background-color: #FaFaFa;
-}
-.seltopic {
-     color: #FFFFFF;
-    background-color: #428bca; 
+    font-family: "Roboto", "Helvetica Neue";
+    background-color: #FaFaFa;
 }
 
-.toolbar{
-    font-size:22px;
+.seltopic {
+    color: #FFFFFF;
+    background-color: #428bca;
+}
+
+.toolbar {
+    font-size: 22px;
     background-color: #eaeaea;
 }
 
 .list-group-item {
-      padding: 5px !important;
+    padding: 5px !important;
 }
-#tmenu a             {
-    color:#000;
+
+#tmenu a {
+    color: #000;
 }
