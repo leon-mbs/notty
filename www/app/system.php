@@ -93,4 +93,38 @@ class System
         \App\Session::getSession()->topage = null;
     }
 
+    
+    public static function setSuccesMsg($msg) {
+        Session::getSession()->smsg = $msg;
+    }
+
+    public static function getSuccesMsg() {
+        return Session::getSession()->smsg;
+    }
+
+    public static function setErrorMsg($msg) {
+        Session::getSession()->emsg = $msg;
+    }
+
+    public static function getErrorMsg() {
+        return Session::getSession()->emsg;
+    }
+
+    public static function setWarnMsg($msg) {
+        Session::getSession()->wmsg = $msg;
+    }
+
+    public static function getWarnMsg() {
+        return Session::getSession()->wmsg;
+    }
+
+    public static function setInfoMsg($msg) {
+        Session::getSession()->imsg = $msg;
+    }
+
+    public static function getInfoMsg() {
+        return Session::getSession()->imsg;
+    }
+    
+    
 }

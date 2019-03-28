@@ -14,19 +14,12 @@ use \Zippy\Html\Label;
 class Base extends \Zippy\Html\WebPage
 {
 
-    public $_errormsg;
-    public $_successmsg;
-    public $_warnmsg;
-    public $_infomsg;
+    
 
     public function __construct() {
         parent::__construct();
 
-        $this->add(new Label("errormessage", new \Zippy\Binding\PropertyBinding($this, '_errormsg'), false, true))->setVisible(false);
-        $this->add(new Label("successmessage", new \Zippy\Binding\PropertyBinding($this, '_successmsg'), false, true))->setVisible(false);
-        $this->add(new Label("warnmessage", new \Zippy\Binding\PropertyBinding($this, '_warnmsg'), false, true))->setVisible(false);
-        $this->add(new Label("infomessage", new \Zippy\Binding\PropertyBinding($this, '_infomsg'), false, true))->setVisible(false);
-
+      
 
 
         $this->add(new ClickLink("logout", $this, OnExit));
@@ -67,38 +60,48 @@ class Base extends \Zippy\Html\WebPage
         App::Redirect("\\App\\Pages\\UserLogin");
     }
 
+    //вывод ошибки,  используется   в дочерних страницах
     public function setError($msg) {
-        $this->_errormsg = $msg;
+        System::setErrorMsg($msg);
     }
 
     public function setSuccess($msg) {
-        $this->_successmsg = $msg;
-    }
-
-    public function setInfo($msg) {
-        $this->_infomsg = $msg;
+        System::setSuccesMsg($msg);
     }
 
     public function setWarn($msg) {
-        $this->_warnmsg = $msg;
+        System::setWarnMsg($msg);
+    }
+
+    public function setInfo($msg) {
+        System::setInfoMsg($msg);
+    }
+
+    final protected function isError() {
+        return strlen(System::getErrorMsg()) > 0;
     }
 
     protected function beforeRender() {
-        $this->errormessage->setVisible(strlen($this->_errormsg) > 0);
-        $this->successmessage->setVisible(strlen($this->_successmsg) > 0);
-        $this->infomessage->setVisible(strlen($this->_infomsg) > 0);
-        $this->warnmessage->setVisible(strlen($this->_warnmsg) > 0);
-    }
+   }
 
     protected function afterRender() {
+        if (strlen(System::getErrorMsg()) > 0)
+            App::$app->getResponse()->addJavaScript("toastr.error('" . System::getErrorMsg() . "')        ", true);
+        if (strlen(System::getWarnMsg()) > 0)
+            App::$app->getResponse()->addJavaScript("toastr.warning('" . System::getWarnMsg() . "')        ", true);
+        if (strlen(System::getSuccesMsg()) > 0)
+            App::$app->getResponse()->addJavaScript("toastr.success('" . System::getSuccesMsg() . "')        ", true);
+        if (strlen(System::getInfoMsg()) > 0)
+            App::$app->getResponse()->addJavaScript("toastr.info('" . System::getInfoMsg() . "')        ", true);
+
+
+
         $this->setError('');
         $this->setSuccess('');
+
         $this->setInfo('');
         $this->setWarn('');
     }
 
-    protected function isError() {
-        return strlen($this->_errormsg) > 0 ? true : false;
-    }
-
+     
 }

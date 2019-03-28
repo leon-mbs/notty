@@ -7,6 +7,7 @@ use \Zippy\Html\Panel;
 use \Zippy\Html\Label;
 use \Zippy\Html\Image;
 use \Zippy\Html\Form\Form;
+use \Zippy\Html\Form\Button;
 use \Zippy\Html\Form\TextInput;
 use \Zippy\Html\Form\TextArea;
 use \Zippy\Html\Form\CheckBox;
@@ -36,8 +37,8 @@ class Main extends Base
 
     private $_edited = 0;
     private $clipboard = array();
-    public $_tarr;
-    public $_sarr;
+    public $_tarr= array();
+    public $_sarr= array();
     public $_farr = array();
 
     public function __construct() {
@@ -55,7 +56,7 @@ class Main extends Base
         $this->nodeform->add(new TextInput("opname"));
 
         //тулбар дерева
-        $this->add(new ClickLink("treeadd"));
+        $this->add(new Button("treeadd"));
         $this->add(new ClickLink("treeedit"));
         $this->add(new ClickLink("treecut", $this, 'onNodeCut'));
         $this->add(new ClickLink("treepaste", $this, 'onNodePaste'));
@@ -73,9 +74,9 @@ class Main extends Base
         $this->add(new BookmarkableLink("topiclink"));
 
         //список  топиков
-        $topiclist = $this->add(new \Zippy\Html\DataList\DataView('topiclist', new \Zippy\Html\DataList\ArrayDataSource(new \Zippy\Binding\ArrayPropertyBinding($this, '_tarr')), $this, "onRow"));
+        $topiclist = $this->add(new \Zippy\Html\DataList\DataView('topiclist', new \Zippy\Html\DataList\ArrayDataSource($this, '_tarr'), $this, "onRow"));
         $topiclist->setCellClickEvent($this, 'onTopic');
-        $topiclist->setSelectedClass('seltopic');
+        $topiclist->setSelectedClass('table-success');
 
         //содержимое топика
         $this->add(new Label("content"));
@@ -87,9 +88,7 @@ class Main extends Base
         $this->editform->add(new TextArea("editcontent"));
         $this->editform->add(new ClickLink("editcancel", $this, "onTopicCancel"));
         $this->editform->add(new SubmitLink("editsave"))->onClick($this, "onTopicSave");
-        ;
-
-
+ 
 
         //аплоад файла
         $this->add(new Form("fileform"))->onSubmit($this, "OnFile");
@@ -104,9 +103,9 @@ class Main extends Base
         $this->sform->add(new DropDownChoice("searchtype"));
 
         //список  результата поиска
-        $searchlist = $this->add(new \Zippy\Html\DataList\DataView('searchlist', new \Zippy\Html\DataList\ArrayDataSource(new \Zippy\Binding\ArrayPropertyBinding($this, '_sarr')), $this, "onSearchRow"));
+        $searchlist = $this->add(new \Zippy\Html\DataList\DataView('searchlist', new \Zippy\Html\DataList\ArrayDataSource($this, '_sarr'), $this, "onSearchRow"));
         $searchlist->setCellClickEvent($this, 'onSearchTopic');
-        $searchlist->setSelectedClass('seltopic');
+        $searchlist->setSelectedClass('table-success');
 
 
         $this->add(new \Zippy\Html\Link\LinkList("taglist"))->onClick($this, 'OnTagList');
@@ -130,9 +129,9 @@ class Main extends Base
 
     //редактировать  топик
     public function onTopicEdit($sender) {
-        $this->_edited = $this->topiclist->getSelectedRow();
-        $topic = Topic::load($this->_edited);
-
+        $topic = $this->topiclist->getSelectedRow()->getDataItem();
+        
+        $this->_edited = $topic->topic_id;
         $this->editform->edittitle->setText($topic->title);
         $this->editform->edittags->setTags($topic->getTags());
         $this->editform->edittags->setSuggestions($topic->getSuggestionTags());
@@ -151,7 +150,7 @@ class Main extends Base
         $topic->save();
         $tags = $this->editform->edittags->getTags();
         $topic->saveTags($tags);
-        $this->topiclist->setSelectedRow($topic->topic_id);
+       // $this->topiclist->setSelectedRow($topic->topic_id);
 
         $nodeid = $this->tree->selectedNodeId();
         if ($this->_edited == 0) {
@@ -278,7 +277,7 @@ class Main extends Base
     //клик по  узлу
     public function onTree($sender, $id) {
 
-        $this->topiclist->setSelectedRow(-1);
+        $this->topiclist->setSelectedRow();
         $this->ReloadTopic($id);
     }
 
@@ -287,25 +286,26 @@ class Main extends Base
     public function onRow($row) {
         $topic = $row->getDataitem();
         $row->add(new Label('title', $topic->title));
+        //$row->add(new ClickLink('title', $this,'onTopic'));
         $fav = $row->add(new Label('fav'));
-        if ($topic->favorites > 0) {
-            $fav->setAttribute("class", "fa fa-star");
-        } else {
-            $fav->setAttribute("class", null);
-        }
+        $fav->isVisible($topic->favorites > 0);
+   
     }
 
     //клик по топику
-    public function onTopic($sender, $topic_id) {
+    public function onTopic($row) {
 
-        $this->_farr = \App\Entity\File::findByTopic($topic_id);
-        $this->filelist->Reload();
+       $topic = $row->getDataItem(); 
+       $this->_farr = \App\Entity\File::findByTopic($topic->topic_id);
+       $this->filelist->Reload();
+       $this->topiclist->setSelectedRow($row);
+       $this->topiclist->Reload();
     }
 
     //избранное
     public function onFav($sender) {
-        $id = $this->topiclist->getSelectedRow();
-        $topic = Topic::load($id);
+        $topic = $this->topiclist->getSelectedRow()->getDataItem();
+ 
         $topic->favorites = $topic->favorites == 1 ? 0 : 1;
         $topic->save();
         $this->ReloadTopic($this->tree->selectedNodeId());
@@ -313,7 +313,7 @@ class Main extends Base
 
     //вырезать топик в  клипборд
     public function onTopicCut($sender) {
-        $this->clipboard[0] = $this->topiclist->getSelectedRow();
+        $this->clipboard[0] = $this->topiclist->getSelectedRow()->getDataItem()->topic_id;
         $this->clipboard[1] = 'topic';
         $this->clipboard[2] = 'cut';
         $this->clipboard[3] = $this->tree->selectedNodeId();
@@ -321,7 +321,7 @@ class Main extends Base
 
     //копировать шорткат  на  топик
     public function onTopicTag($sender) {
-        $this->clipboard[0] = $this->topiclist->getSelectedRow();
+        $this->clipboard[0] = $this->topiclist->getSelectedRow()->getDataItem()->topic_id;
         $this->clipboard[1] = 'topic';
         $this->clipboard[2] = 'tag';
         $this->clipboard[3] = $this->tree->selectedNodeId();
@@ -329,7 +329,7 @@ class Main extends Base
 
     //копировать топик
     public function onTopicCopy($sender) {
-        $this->clipboard[0] = $this->topiclist->getSelectedRow();
+        $this->clipboard[0] = $this->topiclist->getSelectedRow()->getDataItem()->topic_id;
         $this->clipboard[1] = 'topic';
         $this->clipboard[2] = 'copy';
         $this->clipboard[3] = $this->tree->selectedNodeId();
@@ -337,8 +337,8 @@ class Main extends Base
 
     //удалить топик
     public function onTopicDelete($sender) {
-        Topic::delete($this->topiclist->getSelectedRow());
-        $this->topiclist->setSelectedRow(0);
+        Topic::delete($this->topiclist->getSelectedRow()->getDataItem()->topic_id);
+        $this->topiclist->setSelectedRow();
         $this->ReloadTopic($this->tree->selectedNodeId());
         $this->ReloadTree();
     }
@@ -389,7 +389,7 @@ class Main extends Base
 
         $f = new \ App\Entity\File();
         $f->content = file_get_contents($file['tmp_name']);
-        $f->topic_id = $this->topiclist->getSelectedRow();
+        $f->topic_id = $this->topiclist->getSelectedRow()->getDataItem()->topic_id;
         ;
         $imagedata = @getimagesize($file['tmp_name']);
         if (is_array($imagedata)) {
@@ -417,7 +417,7 @@ class Main extends Base
         $this->filelist->Reload();
     }
 
-    //обработчик поииска
+    //обработчик поиска
     public function OnSearch($form) {
         $text = $form->skeyword->getText();
         $t = $form->searchtype->getValue();
@@ -459,7 +459,7 @@ class Main extends Base
         $topic = TopicNode::load($tn_id);
         $this->tree->selectedNodeId($topic->node_id);
 
-        $this->topiclist->setSelectedRow($topic->topic_id);
+      //  $this->topiclist->setSelectedRow($topic->topic_id);
         $this->ReloadTopic($topic->node_id);
     }
 
@@ -472,8 +472,13 @@ class Main extends Base
 
         $nodeid = $this->tree->selectedNodeId();
         $node = Node::load($nodeid);
-
-        $topicid = $this->topiclist->getSelectedRow();
+        $topicid=0;
+        $row =$this->topiclist->getSelectedRow();
+        
+        if($row instanceof \Zippy\Html\DataList\DataRow){
+           $topicid = $row->getDataItem()->topic_id; 
+        }
+        
         $topic = Topic::load($topicid);
         if($topic == false){
             $topicid =0;
@@ -526,16 +531,18 @@ class Main extends Base
             $this->topiccopy->setVisible(true);
             $this->topictag->setVisible(true);
             $this->topicdelete->setVisible(true);
+              if ($topic->ispublic > 0) {
             $this->topiclink->setVisible(true);
             $this->topiclink->setLink("/topic/" . $topicid);
+              }
             $this->addfile->setVisible(true);
             ;
             $this->setfav->setVisible(true);
             ;
             if ($topic->favorites > 0) {
-                $this->setfav->setAttribute("class", "fa fa-star");
+                $this->setfav->setAttribute("style", "color:brown;");
             } else {
-                $this->setfav->setAttribute("class", "fa fa-star-o");
+                $this->setfav->setAttribute("style", "color:gray;");
             }
 
             $tags = $topic->getTags();

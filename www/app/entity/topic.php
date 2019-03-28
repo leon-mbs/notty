@@ -13,6 +13,7 @@ class Topic extends \ZCL\DB\Entity
 
     protected function init() {
         $this->topic_id = 0;
+        $this->ispublic = 0;
     }
 
     /**

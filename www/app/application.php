@@ -60,6 +60,7 @@ class Application extends \Zippy\WebApplication
         }
 
         $pages = array(
+            "topic" => "\\App\\Pages\\ShowTopic",
             "signin" => "\\App\\Pages\\UserLogin",
             "signup" => "\\App\\Pages\\Registration",
             "main" => "\\App\\Pages\\Main");
@@ -75,9 +76,7 @@ class Application extends \Zippy\WebApplication
         if ($pages[$uri] != null) {
             $this->LoadPage($pages[$uri]);
         } else {
-            if ($arr[1] > 0 && $arr[0] == 'topic') {
-                $this->LoadPage("\\App\\Pages\\ShowTopic", $arr[1]);
-            } else
+     
                 $this->getResponse()->to404Page();
         }
     }

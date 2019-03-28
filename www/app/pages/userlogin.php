@@ -10,7 +10,7 @@ use \App\System;
 use \App\Entity\User;
 use \Zippy\Html\Label;
 
-class UserLogin extends Base
+class UserLogin extends \Zippy\Html\WebPage
 {
 
     public $_errormsg;
@@ -29,6 +29,8 @@ class UserLogin extends Base
     }
 
     public function onsubmit($sender) {
+       global $logger, $_config;        
+        
         $this->setError('');
         if ($this->_login == '') {
             $this->setError('Введите логин');
@@ -49,7 +51,7 @@ class UserLogin extends Base
                 $_SESSION['userlogin'] = $user->userlogin; //для  использования  вне  Application
                 //App::$app->getResponse()->toBack();
                 if ($this->loginform->remember->isChecked()) {
-                    $_config = parse_ini_file(_ROOT . 'config/config.ini', true);
+                    
                     setcookie("remember", $user->user_id . '_' . md5($user->user_id . $_config['common']['salt']), time() + 60 * 60 * 24 * 30);
                 }
                 if (\App\Session::getSession()->topage == null) {
@@ -65,12 +67,16 @@ class UserLogin extends Base
         $this->_password = '';
     }
 
-    public function beforeRequest() {
-        parent::beforeRequest();
+    public function setError($msg) {
+        $this->_errormsg = $msg;
+    }
 
-        if (System::getUser()->user_id > 0) {
-            App::RedirectHome();
-        }
+    protected function afterRender() {
+
+        if (strlen($this->_errormsg) > 0)
+            App::$app->getResponse()->addJavaScript("toastr.error('{$this->_errormsg}')        ", true);
+
+        $this->setError('');
     }
 
 }
