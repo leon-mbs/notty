@@ -151,7 +151,10 @@ class Main extends Base
         $topic->title = $this->editform->edittitle->getText();
         $topic->content = $this->editform->editcontent->getText();
         $topic->ispublic = $this->editform->editispublic->isChecked();
-
+        if(strlen($topic->title)==0){
+            $this->setError('не введен заголовое');
+            return;
+        }
         $topic->save();
         $tags = $this->editform->edittags->getTags();
         $topic->saveTags($tags);
@@ -281,7 +284,8 @@ class Main extends Base
 
     //клик по  узлу
     public function onTree($sender, $id) {
-
+        $this->_edited = 0;
+        $this->_tvars['editor'] = false;
         $this->topiclist->setSelectedRow();
         $this->ReloadTopic($id);
     }

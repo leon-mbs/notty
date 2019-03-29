@@ -1,4 +1,4 @@
-Zippy Note  
+﻿Zippy Note  
 ========
 Пока как MVP
 
@@ -13,7 +13,7 @@ Zippy Note
 Демо:  [http://note.zippy.com.ua/](http://note.zippy.com.ua/)
 вход admin@admin.admin admin
 
-[скриншот](https://www.dropbox.com/s/s18z7pq8eq1ba24/screen.png?dl=0)
+[скриншот](http://zippy.com.ua/download/znote.jpg)
 
 
 #### Возможности
