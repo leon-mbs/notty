@@ -36,7 +36,7 @@ class Topic extends \ZCL\DB\Entity
 
         $conn->Execute("delete from topicnode where node_id= {$node_id} ");
 
-        $conn->Execute("delete from topic where topic_id not  in (select topic_id from topicnode)");
+        $conn->Execute("delete from topics where topic_id not  in (select topic_id from topicnode)");
         $conn->Execute("delete from files where topic_id not  in (select topic_id from topicnode)");
     }
 
@@ -91,8 +91,13 @@ class Topic extends \ZCL\DB\Entity
      * 
      */
     public function getTags() {
+        $tl = array();
         $conn = \ZCL\DB\DB::getConnect();
-        return $conn->GetCol("select distinct tagvalue from tags where topic_id=" . $this->topic_id);
+        $rc = $conn->GetCol("select distinct tagvalue from tags where topic_id=" . $this->topic_id);
+        foreach($rc as $k=>$v){
+           if(strlen($v))$tl[$k] = $v;
+        }
+        return $tl;
     }
 
     /**

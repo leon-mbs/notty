@@ -88,6 +88,7 @@ class Main extends Base
         $this->editform->add(new TextArea("editcontent"));
         $this->editform->add(new ClickLink("editcancel", $this, "onTopicCancel"));
         $this->editform->add(new SubmitLink("editsave"))->onClick($this, "onTopicSave");
+        $this->editform->add(new CheckBox("editispublic"));
  
 
         //аплоад файла
@@ -129,13 +130,16 @@ class Main extends Base
 
     //редактировать  топик
     public function onTopicEdit($sender) {
-        $topic = $this->topiclist->getSelectedRow()->getDataItem();
+        $topic = Topic::load($this->topiclist->getSelectedRow()->getDataItem()->topic_id);
         
         $this->_edited = $topic->topic_id;
+        \App\Session::getSession()->topic_id = $topic->topic_id;
+        
         $this->editform->edittitle->setText($topic->title);
         $this->editform->edittags->setTags($topic->getTags());
         $this->editform->edittags->setSuggestions($topic->getSuggestionTags());
         $this->editform->editcontent->setText($topic->content);
+        $this->editform->editispublic->setChecked($topic->ispublic);
 
         $this->_tvars['editor'] = true;
     }
@@ -146,23 +150,24 @@ class Main extends Base
         $topic = $this->_edited > 0 ? Topic::load($this->_edited) : new Topic();
         $topic->title = $this->editform->edittitle->getText();
         $topic->content = $this->editform->editcontent->getText();
+        $topic->ispublic = $this->editform->editispublic->isChecked();
 
         $topic->save();
         $tags = $this->editform->edittags->getTags();
         $topic->saveTags($tags);
-       // $this->topiclist->setSelectedRow($topic->topic_id);
+        // $this->topiclist->setSelectedRow($topic->topic_id);
 
         $nodeid = $this->tree->selectedNodeId();
         if ($this->_edited == 0) {
             $topic->addToNode($nodeid);
         }
-        $this->ReloadTopic($nodeid);
+         $this->ReloadTopic($nodeid);
 
 
         $this->_tvars['editor'] = false;
 
 
-        $this->ReloadTree();
+        //$this->ReloadTree();
     }
 
     public function onTopicCancel($sender) {
@@ -241,14 +246,14 @@ class Main extends Base
         $user_id = System::getUser()->user_id;
 
 
-        $itemlist = Node::find('user_id=' . $user_id, "mpath,title");
+        $itemlist = Node::find('user_id=' . $user_id, "pid,mpath,title");
         if (count($itemlist) == 0) { //добавляем  корень
             $root = new Node();
             $root->title = "//";
             $root->user_id = $user_id;
             $root->save();
 
-            $itemlist = Node::find('user_id=' . $user_id, "mpath,title");
+            $itemlist = Node::find('user_id=' . $user_id, "pid,mpath,title");
         }
         $first = null;
         $nodelist = array();
@@ -304,12 +309,12 @@ class Main extends Base
 
     //избранное
     public function onFav($sender) {
-        $topic = $this->topiclist->getSelectedRow()->getDataItem();
+        $topic = Topic::load($this->topiclist->getSelectedRow()->getDataItem()->topic_id);
  
         $topic->favorites = $topic->favorites == 1 ? 0 : 1;
         $topic->save();
         //$this->ReloadTopic($this->tree->selectedNodeId());
-        $this->topiclist->Reload();
+        $this->ReloadTopic();
     }
 
     //вырезать топик в  клипборд
@@ -388,7 +393,7 @@ class Main extends Base
         } else
             return;
 
-        $f = new \ App\Entity\File();
+        $f = new \App\Entity\File();
         $f->content = file_get_contents($file['tmp_name']);
         $f->topic_id = $this->topiclist->getSelectedRow()->getDataItem()->topic_id;
         ;

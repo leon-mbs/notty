@@ -74,19 +74,17 @@
 
                             <td style="width:20px;">
                                 <i title="Прикрепленные файлы" class="fa
-                                        fa-paperclip" style="font-weight:
-                                        bolder;font-size:16px;"></i>
+                                        fa-paperclip" style="font-weight:                                         bolder;font-size:16px;"></i>
                             </td>
                             <td>
                                 <div zippy="filelist" style="display:inline;background-color:
                                         #ddd;margin:2px;">
                                     <a target="_blank" zippy="filelink"></a>
-                                    <a zippy="filedel" class="fa
-                                            fa-remove"></a>
+                                    <a zippy="filedel" ><i style="color:red;font-size: smaller;" class="fa  fa-times-circle  "><i/></a>
                                 </div>
                                 &nbsp;<a title="Добавить файл" zippy="addfile" href="#" onclick="newfile()"><i class="fa
                                             fa-upload text-primary"></i></a></td>
-                            <td style="width:20px;"><a zippy="setfav" style="color:gray;"><i
+                            <td style="width:20px;"><a zippy="setfav" ><i
                                             style="font-weight:bold;" class="fa
                                             fa-star"></a>
                             </td>
@@ -117,8 +115,8 @@
                             <div zippy="edittags"> </div>
                         </div>
                         <div class="form-check">
-                            <input zippy="ispublic" type="checkbox" class="form-check-input">
-                            <label class="form-check-label" for="ispublic">Публичный</label>
+                            <input zippy="editispublic" type="checkbox" class="form-check-input">
+                            <label class="form-check-label" for="editispublic">Публичный</label>
                         </div>
                         <a zippy="editcancel" class="btn btn-light">Отмена</a>&nbsp;
                         <a zippy="editsave" class="btn btn-primary">Сохранить</a>
@@ -207,7 +205,7 @@
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
-                                <label for="editfile">Файл (до 1 Мб)</label>
+                                <label for="editfile">Файл (до 10 Мб)</label>
                                 <input required="required" type="file" zippy="editfile" class="form-control
                                             input-sm">
                             </div>
@@ -261,11 +259,14 @@
                 return confirm('Удалить узел');
             }
 
-            CKEDITOR.replace('editcontent', {
-                customConfig: '/assets/ckeditor/cconfig.js',
-                language: "ru"
-            });
-
+            if($('#editcontent').length)  {
+                CKEDITOR.replace('editcontent', {
+                    language: "ru",
+                    customConfig: '/assets/js/ckeditor/config.js',
+                    filebrowserBrowseUrl: '',
+                    filebrowserUploadUrl: '/upload.php'
+                });
+            }
             function fav() {
 
             };
