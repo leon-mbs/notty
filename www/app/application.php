@@ -8,13 +8,7 @@ namespace App;
  */
 class Application extends \Zippy\WebApplication
 {
-
-    public function __construct($homepage) {
-        parent::__construct($homepage);
-
-        //$this->set404('templates/404.html');
-    }
-
+  
     /**
      * Возвращает  шаблон  страницы
      *

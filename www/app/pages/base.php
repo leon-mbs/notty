@@ -22,7 +22,7 @@ class Base extends \Zippy\Html\WebPage
       
 
 
-        $this->add(new ClickLink("logout", $this, OnExit));
+        $this->add(new ClickLink("logout", $this, "OnExit"));
 
         $user = System::getUser();
 
