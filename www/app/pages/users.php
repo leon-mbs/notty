@@ -25,7 +25,7 @@ class Users extends \App\Pages\Base
         parent::__construct();
 
         if (System::getUser()->username != 'admin') {
-            Application::toPage("/");
+            Application::RedirectURI("/");
             return;
         }
 

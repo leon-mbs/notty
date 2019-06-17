@@ -83,14 +83,7 @@ class Application extends \Zippy\WebApplication
         self::$app->getResponse()->Redirect("\\App\\Pages\\Error", $message);
         // Application::Redirect404();
     }
-
-    /**
-     * Редирект непосредственно  по  адресу
-     *
-     */
-    public static function toPage($url) {
-        self::$app->getResponse()->toPage($url);
-        self::$app->getResponse()->output();
-    }
+           
+  
 
 }

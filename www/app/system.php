@@ -85,10 +85,10 @@ class System
         $user = System::getUser();
         if ($user->user_id == 0) {
             \App\System\Session::getSession()->topage = $uri;
-            Application::toPage("/signin");
+            Application::RedirectURI("/signin");
         }
         if ($role >= 0 && $user->userrole != $role && $user->userrole != User::ROLE_ADMIN) {
-            Application::toPage('/');
+            Application::RedirectURI('/');
         }
         \App\Session::getSession()->topage = null;
     }

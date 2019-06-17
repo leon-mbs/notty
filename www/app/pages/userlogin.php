@@ -57,7 +57,7 @@ class UserLogin extends \Zippy\Html\WebPage
                 if (\App\Session::getSession()->topage == null) {
                     App::RedirectHome();
                 } else {
-                    App::toPage(\App\Session::getSession()->topage);
+                    App::RedirectURI(\App\Session::getSession()->topage);
                 }
             } else {
                 $this->setError('Неверный  логин');
