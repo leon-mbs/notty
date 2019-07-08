@@ -126,6 +126,7 @@ class Main extends Base
         $topic = new Topic();
         $this->editform->edittags->setSuggestions($topic->getSuggestionTags());
         $this->_tvars['editor'] = true;
+        \App\Session::getSession()->topic_id = $topic->topic_id;
     }
 
     //редактировать  топик
@@ -391,7 +392,7 @@ class Main extends Base
         if (strlen($file['tmp_name']) > 0) {
             if (filesize($file['tmp_name']) / 1024 / 1024 > 1) {
 
-                $this->setError("Файл шлишком  большой");
+                $this->setError("Файл cлишком  большой");
                 return;
             }
         } else
@@ -417,7 +418,7 @@ class Main extends Base
     public function onFileRow($row) {
         $file = $row->getDataItem();
         $row->add(new ClickLink("filedel", $this, "onFileDel"));
-        $row->add(new BookmarkableLink("filelink", "/files/" . $file->file_id))->setValue($file->filename);
+        $row->add(new BookmarkableLink("filelink", "/loadfile.php?id=" . $file->file_id))->setValue($file->filename);
     }
 
     public function onFileDel($sender) {

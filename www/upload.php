@@ -9,18 +9,18 @@ if(isset($_FILES['upload'])){
                
     
         $filename=  $_FILES['upload']['name'];
-        $f = new \ App\Entity\File();
+        $f = new \App\Entity\File();
         $f->filename = $_FILES['upload']['name'];
         $f->content = file_get_contents($_FILES['upload']['tmp_name']);
         $f->topic_id = \App\Session::getSession()->topic_id;
-        
+         
         if (is_array($imagedata)) {
             $f->mime = $imagedata['mime'];
         }
         $f->size = filesize($_FILES['upload']['tmp_name']); 
         $f->save();         
          
-        $url="/files/". $f->file_id;
+        $url="/loadfile.php?id=". $f->file_id;
         
        } else {
          $message ="Неверное  изображение!"; 

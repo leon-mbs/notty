@@ -6,6 +6,7 @@ use \App\Application as App;
 use \App\Helper;
 use \App\System;
 use \Zippy\Html\Label;
+use \Zippy\Html\Panel;
 
 /**
  * страница показа  топика  по  публичной ссылке
@@ -19,15 +20,16 @@ class ShowTopic extends \Zippy\Html\WebPage
             App::Redirect404();
             return;
         }
-        
+        $user = System::getUser();
         if($topic->ispublic <> 1){
-            $user = System::getUser();
+            
             if ($user->user_id != $topic->user_id) {
                  App::Redirect404();
                  return;    
             }
         }
         
+        $this->add(new Panel("toolbar" ))->setVisible($user->user_id>0);
         $this->add(new Label("title", $topic->title, true));
         $this->add(new Label("content", $topic->content, true));
     }
