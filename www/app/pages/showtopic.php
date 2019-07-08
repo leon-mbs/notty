@@ -29,9 +29,9 @@ class ShowTopic extends \Zippy\Html\WebPage
             }
         }
         
-        $this->add(new Panel("toolbar" ))->setVisible($user->user_id>0);
+           
         $this->add(new Label("title", $topic->title, true));
         $this->add(new Label("content", $topic->content, true));
     }
-
+ 
 }
