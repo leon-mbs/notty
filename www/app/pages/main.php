@@ -390,7 +390,7 @@ class Main extends Base
     public function OnFile($form) {
         $file = $form->editfile->getFile();
         if (strlen($file['tmp_name']) > 0) {
-            if (filesize($file['tmp_name']) / 1024 / 1024 > 1) {
+            if (filesize($file['tmp_name']) / 1024 / 1024 > 10) {
 
                 $this->setError("Файл cлишком  большой");
                 return;
