@@ -69,7 +69,7 @@ class Topic extends \ZCL\DB\Entity
         $conn->Execute("delete from files where topic_id=" . $this->topic_id);
         $conn->Execute("delete from topicnode where topic_id=" . $this->topic_id);
 
-        return true;
+        return "";
     }
 
     /**

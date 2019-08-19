@@ -19,7 +19,7 @@ require_once 'init.php';
                 $user = \App\System::getUser();
                 if ($user->user_id != $topic->user_id) {
                      App::Redirect404();
-                     return;    
+                     die;    
                 }
             }             
             header('Content-Type: application/octet-stream');
@@ -30,5 +30,5 @@ require_once 'init.php';
         header("Content-Length: " . $file->size);
 
         echo $file->content;
-        exit;          
+        die;          
         
