@@ -107,6 +107,7 @@ class Main extends Base
         $searchlist = $this->add(new \Zippy\Html\DataList\DataView('searchlist', new \Zippy\Html\DataList\ArrayDataSource($this, '_sarr'), $this, "onSearchRow"));
         $searchlist->setCellClickEvent($this, 'onSearchTopic');
         $searchlist->setSelectedClass('table-success');
+        $searchlist->setSelectedClass('table-success');
 
         $this->add(new Panel("tpanel"));
         $this->tpanel->add(new \Zippy\Html\Link\LinkList("taglist"))->onClick($this, 'OnTagList');
@@ -289,6 +290,12 @@ class Main extends Base
         $this->_tvars['editor'] = false;
         $this->topiclist->setSelectedRow();
         $this->ReloadTopic($id);
+        
+        $this->_sarr = array();
+        $this->searchlist->Reload();
+         
+        $this->sform->skeyword->setText('');
+          
     }
 
     //вывод строки  списка  топиков
@@ -465,13 +472,22 @@ class Main extends Base
     }
 
     //выбор  строки  из  результата  поиска
-    public function onSearchTopic($sender, $tn_id) {
+    public function onSearchTopic($row ) {
 
-        $topic = TopicNode::load($tn_id);
-        $this->tree->selectedNodeId($topic->node_id);
-
-      //  $this->topiclist->setSelectedRow($topic->topic_id);
+        $topic= $row->getDataItem()  ;
+        $this->tree->selectedNodeId(intval($topic->node_id));
+   
         $this->ReloadTopic($topic->node_id);
+        $trows = $this->topiclist->getDataRows() ;
+        foreach($trows as $tr) {
+            $t = $tr->getDataItem();
+            if($t->topic_id==$topic->topic_id) {
+                 $this->onTopic($tr) ;
+            }
+        }
+        
+        $this->searchlist->setSelectedRow($row);        
+        $this->searchlist->Reload(false); 
     }
 
     /**
