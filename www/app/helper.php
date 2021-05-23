@@ -18,9 +18,9 @@ class Helper
      * @param mixed $password
      * @return  boolean
      */
-    public static function login($email, $password = null) {
+    public static function login($login, $password = null) {
 
-        $user = User::findOne("  email='{$email}' ");
+        $user = User::findOne("  username='{$login}' ");
 
         if ($user == null)
             return false;

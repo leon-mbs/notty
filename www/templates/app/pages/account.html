@@ -6,16 +6,17 @@
         <div class="col-3">
             <h3>Профиль</h3>
             <form zippy="profileform" role="form" enctype="multipart/form-data">
-                <!-- <h4>Аккаунт</h4> -->
+            
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" class="form-control" zippy="email" readonly>
                 </div>
+                {{^admin}}
                 <div class="form-group">
                     <label for="username">Имя</label>
                     <input type="text" class="form-control" zippy="username" required="required">
                 </div>
-
+                 {{/admin}}
                 <div class="form-group">
                     <label for="password">Пароль</label>
                     <input type="password" class="form-control" zippy="password">

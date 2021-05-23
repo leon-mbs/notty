@@ -20,6 +20,7 @@ class Users extends \App\Pages\Base
 {
 
     private $_ds;
+    private $_user ;
 
     public function __construct() {
         parent::__construct();
@@ -30,18 +31,23 @@ class Users extends \App\Pages\Base
         }
 
         $plist = $this->add(new Panel('plist'));
-        $plist->add(new Form('filterform'))->onSubmit($this, 'filterOnSubmit');
-        $plist->filterform->add(new TextInput('search'));
-
+        $plist->add(new ClickLink('adduser',$this,'OnAddNew')) ;
+        
 
         $this->_ds = new EntityDataSource("\\App\\Entity\\User", "username <>  'admin'", "username asc");
         $plist->add(new DataView("userrow", $this->_ds, $this, 'OnAddUserRow'));
-        $plist->userrow->setPageSize(50);
-        $plist->add(new Paginator("paginator", $plist->userrow));
+      
         $plist->userrow->Reload();
 
         $pedit = $this->add(new Panel('pedit'));
         $pedit->setVisible(false);
+        
+        $pedit->add(new  Form('editform'))->onSubmit($this,'onSave');
+        $pedit->editform->add(new TextInput('editname')) ;
+        $pedit->editform->add(new TextInput('editpass')) ;
+        $pedit->editform->add(new TextInput('editemail')) ;
+        
+        $pedit->add(new ClickLink('cancel',$this,'OnCancel')) ;
     }
 
     //удаление  юзера
@@ -53,27 +59,57 @@ class Users extends \App\Pages\Base
 
     public function OnAddUserRow(\Zippy\Html\DataList\DataRow $datarow) {
         $item = $datarow->getDataItem();
-        $datarow->add(new \Zippy\Html\Link\ClickLink("username", $this, 'OnEdit'))->setValue($item->username);
-        $datarow->add(new \Zippy\Html\Label("created", date('d.m.Y', $item->createdon)));
+        $datarow->add(new  ClickLink("username", $this, 'OnEdit'))->setValue($item->username);
+        $datarow->add(new  ClickLink("del", $this, 'OnRemove'))    ;
     }
-
-    public function filterOnSubmit($sender) {
-        $where = "userrole <> " . User::ROLE_ADMIN;
-        $search = $this->plist->filterform->search->getText();
-        if (strlen($search) > 0) {
-            $search = User::qstr('%' . $search . '%');
-            $where .= "  and  username like {$search}  ";
-        }
-
-        $this->_ds->setWhere($where);
-        $this->plist->userrow->Reload();
-    }
-
+  
+    public function OnAddNew($sender) {
+        $this->_user = new User();  
+        $this->plist->setVisible(false);
+        $this->pedit->setVisible(true);
+        $this->pedit->editform->clean();
+    }   
+    
+    public function OnCancel($sender) {
+          
+        $this->plist->setVisible(true);
+        $this->pedit->setVisible(false);
+        $this->pedit->editform->clean(); 
+    }   
+    
     public function OnEdit($sender) {
-        $user = $sender->getOwner()->getDataItem();
+        $this->_user = $sender->getOwner()->getDataItem();
 
         $this->plist->setVisible(false);
         $this->pedit->setVisible(true);
+        $this->pedit->editform->editname->setText($this->_user->username);
+        $this->pedit->editform->editpass->setText('');
+        $this->pedit->editform->editemail->setText($this->_user->email);
+        
     }
+    
+    public function onSave($sender) {
+        $pass=$sender->editpass->getText();
+        if(strlen($pass)==0 && $this->_user->user_id==0) {
+            $this->setError('Не задан  пароль');
+            return;
+        }
+        $this->_user->username = $sender->editname->getText();
+        $this->_user->email = $sender->editemail->getText();
+        if(strlen($pass)>0 ) {
+            $this->_user->userpass= $pass;
+        }
+        
+        if($this->_user->username=='admin') {
+            $this->setError('Недопустимое имя');
+            return;
+        }
+        $this->_user->save();
+        $this->plist->userrow->Reload();
+        
+        $this->plist->setVisible(true);
+        $this->pedit->setVisible(false);
+        $this->pedit->editform->clean(); 
+    }   
 
 }
