@@ -1,6 +1,6 @@
-﻿Zippy Note  
+Zippy Note  
 ========
-Пока как MVP
+ 
 
 Менеджер персональных записей (блокнот,  органайзер ,база знаний)  представляющий возможность
   сохранения  и упорядочивания  пользовательских записей  в  иерархическом  виде.
@@ -10,11 +10,13 @@
 Проект инспирирован [статьей](https://habrahabr.ru/post/316814/) о
 программе [MyTetra](http://webhamster.ru/site/page/index/articles/projectcode/105) и пожеланиями  в  коментах
 
-Демо:  [http://note.zippy.com.ua/](http://note.zippy.com.ua/)
-вход admin@admin.admin admin
+ 
 
 [скриншот](http://zippy.com.ua/download/znote.jpg)
 [скриншот](http://zippy.com.ua/download/znote.png)
+
+
+[Домашняя страница](https://zippy.com.ua/znote)
 
 #### Возможности
 * веб интерфейс
@@ -29,6 +31,8 @@
 
 Стащить из гитхаба, выполнить composer, создать БД, прописать  конект  в  /config/config.ini.
 Выполнить скрипты  для  структуры /db/db.sql и инициализации   /db/initdata.sql 
+
+Если не  нужна  авторизация, выставить  в  конфиге nologin=1
 
  
 
