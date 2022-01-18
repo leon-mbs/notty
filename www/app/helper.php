@@ -20,7 +20,7 @@ class Helper
      */
     public static function login($login, $password = null) {
 
-        $user = User::findOne("  username='{$login}' ");
+        $user = User::getFirst("  username='{$login}' ");
 
         if ($user == null)
             return false;

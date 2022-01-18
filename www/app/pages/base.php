@@ -19,38 +19,46 @@ class Base extends \Zippy\Html\WebPage
     public function __construct() {
         parent::__construct();
 
-      
+        global $_config;
 
-
+        $this->_tvars["nologin"] = $_config['common']['nologin']==1;
+ 
         $this->add(new ClickLink("logout", $this, "OnExit"));
 
         $user = System::getUser();
 
-        if ($_COOKIE['remember'] && $user->user_id == 0) {
-            $arr = explode('_', $_COOKIE['remember']);
-            $_config = parse_ini_file(_ROOT . 'config/config.ini', true);
-            if ($arr[0] > 0 && $arr[1] === md5($arr[0] . $_config['common']['salt'])) {
-                $user = User::load($arr[0]);
-            }
-
-            if ($user instanceof User) {
-
-
-                System::setUser($user);
-            }
+        
+        if($this->_tvars["nologin"] ==true){
+           $user =  User::getByLogin('admin') ;
+           System::setUser($user);       
         }
-        $user = System::getUser();
-        if ($user->user_id == 0) {
-            if ($this instanceof UserLogin) {
+        if($this->_tvars["nologin"] ==false){
+        
+            if ($_COOKIE['remember'] && $user->user_id == 0) {
+                $arr = explode('_', $_COOKIE['remember']);
                 
-            } else {
-                App::Redirect("\\App\\Pages\\UserLogin");
+                if ($arr[0] > 0 && $arr[1] === md5($arr[0] . $_config['common']['salt'])) {
+                    $user = User::load($arr[0]);
+                }
+
+                if ($user instanceof User) {
+
+
+                    System::setUser($user);
+                }
+            }
+            $user = System::getUser();
+            if ($user->user_id == 0) {
+                if ($this instanceof UserLogin) {
+                    
+                } else {
+                    App::Redirect("\\App\\Pages\\UserLogin");
+                }
             }
         }
-
         $this->_tvars["username"] = $user->user_id == 0 ? "" : $user->username;
         $this->_tvars["admin"] = $user->username == 'admin';
-    }
+     }
 
     public function OnExit($sender) {
 

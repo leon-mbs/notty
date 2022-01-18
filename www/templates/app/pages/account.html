@@ -7,13 +7,10 @@
             <h3>Профиль</h3>
             <form zippy="profileform" role="form" enctype="multipart/form-data">
             
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" class="form-control" zippy="email" readonly>
-                </div>
+            
                 {{^admin}}
                 <div class="form-group">
-                    <label for="username">Имя</label>
+                    <label for="username">Логин</label>
                     <input type="text" class="form-control" zippy="username" required="required">
                 </div>
                  {{/admin}}

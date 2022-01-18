@@ -45,7 +45,7 @@ class Users extends \App\Pages\Base
         $pedit->add(new  Form('editform'))->onSubmit($this,'onSave');
         $pedit->editform->add(new TextInput('editname')) ;
         $pedit->editform->add(new TextInput('editpass')) ;
-        $pedit->editform->add(new TextInput('editemail')) ;
+        
         
         $pedit->add(new ClickLink('cancel',$this,'OnCancel')) ;
     }
@@ -84,7 +84,7 @@ class Users extends \App\Pages\Base
         $this->pedit->setVisible(true);
         $this->pedit->editform->editname->setText($this->_user->username);
         $this->pedit->editform->editpass->setText('');
-        $this->pedit->editform->editemail->setText($this->_user->email);
+        
         
     }
     
@@ -95,7 +95,7 @@ class Users extends \App\Pages\Base
             return;
         }
         $this->_user->username = $sender->editname->getText();
-        $this->_user->email = $sender->editemail->getText();
+        
         if(strlen($pass)>0 ) {
             $this->_user->userpass= $pass;
         }

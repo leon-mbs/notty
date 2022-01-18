@@ -2,7 +2,7 @@
     "require": {
 
         "php": ">=5.4",
-        "leon-mbs/zippy": "2.1.8",
+        "leon-mbs/zippy": "2.5.11",
         "monolog/monolog": "1.6.0",
         "roave/security-advisories": "dev-master",
         "ircmaxell/password-compat": "v1.0.4" 

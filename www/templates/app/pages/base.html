@@ -50,6 +50,8 @@
 
                         <ul id="tmenu" class="nav navbar-nav                                navbar-right">
 
+                         {{^nologin}}
+                        
                             {{^username}}
                             <li class="nav-item">
                                 <a class="nav-link" href="/signin">Вход</a>
@@ -72,6 +74,9 @@
                                 </ul>
                             </li>
                             {{/username}}
+                            
+                         {{/nologin}}   
+                            
                         </ul>
 
 

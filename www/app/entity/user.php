@@ -42,9 +42,9 @@ class User extends Entity
      *
      * @param mixed $login
      */
-    public static function getByEmail($email) {
+    public static function getByLogin($login) {
         $conn = \ZCL\DB\DB::getConnect();
-        return User::getFirst('email = ' . $conn->qstr($email));
+        return User::getFirst('username = ' . $conn->qstr($login));
     }
 
     /**

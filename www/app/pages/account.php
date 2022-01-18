@@ -30,7 +30,7 @@ class Account extends Base
 
         $this->add(new Form('profileform'))->onSubmit($this, 'profileformOnSubmit');
         $this->profileform->add(new TextInput('username', $this->_user->username));
-        $this->profileform->add(new TextInput('email', $this->_user->email));
+        
 
         $this->profileform->add(new TextInput('password'));
         $this->profileform->add(new TextInput('confirm'));
@@ -77,7 +77,7 @@ class Account extends Base
             }
             $this->_user->hashdata = "";
 
-            $this->_user->Save();
+            $this->_user->save();
             System::setUser($this->_user);
             $this->setSuccess('Изменения сохранены');
         }
