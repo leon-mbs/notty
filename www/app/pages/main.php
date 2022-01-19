@@ -77,6 +77,8 @@ class Main extends Base
         $topiclist = $this->add(new \Zippy\Html\DataList\DataView('topiclist', new \Zippy\Html\DataList\ArrayDataSource($this, '_tarr'), $this, "onRow"));
         $topiclist->setCellClickEvent($this, 'onTopic');
         $topiclist->setSelectedClass('table-success');
+        $topiclist->setPageSize(25);
+        $this->add(new \Zippy\Html\DataList\Pager("pag", $topiclist));
 
         //содержимое топика
         $this->add(new Label("content"));
