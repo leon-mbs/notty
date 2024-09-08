@@ -1,9 +1,27 @@
 <?php
-
+if (strpos($_SERVER['REQUEST_URI'], 'index.php') > 1) {
+    die('Сайт розміщено не в кореневій папці');
+}
 require_once 'init.php';
 
 try {
+    $user = null;
 
+    if (($_COOKIE['remember'] ?? false) && \App\System::getUser()->user_id == 0) {
+        $arr = explode('_', $_COOKIE['remember']);
+
+        if ($arr[0] > 0 && $arr[1] === md5($arr[0] . \App\Helper::getSalt())) {
+            $user = \App\Entity\User::load($arr[0]);
+        }
+
+        if ($user instanceof \App\Entity\User) {
+            \App\Session::getSession()->clean();
+
+            \App\System::setUser($user);
+            
+            $user->save() ;
+        }
+    }
     $app = new \App\Application();
 
     $app->Run('\App\Pages\Main');

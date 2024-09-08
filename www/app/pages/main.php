@@ -267,7 +267,7 @@ class Main extends Base
         foreach ($itemlist as $item) {
             $node = new \ZCL\BT\TreeNode($item->title, $item->node_id);
             $node->tag = $item->tcnt;  //количество  топиков в ветке
-            $parentnode = @$nodelist[$item->pid];
+            $parentnode = $nodelist[$item->pid] ?? null;
 
             $this->tree->addNode($node, $parentnode);
 
@@ -513,8 +513,8 @@ class Main extends Base
             $topicid =0;
         }
 
-        $nodecp = $this->clipboard[1] == 'node' ? $this->clipboard[0] : 0;
-        $topiccp = $this->clipboard[1] == 'topic' ? $this->clipboard[0] : 0;
+        $nodecp = $this->clipboard[1]??'' == 'node' ? $this->clipboard[0] ??'': 0;
+        $topiccp = $this->clipboard[1] ??'' == 'topic' ? $this->clipboard[0] ??'': 0;
 
         $this->tpanel->setVisible(false);
         $this->treeadd->setVisible(false);
