@@ -19,6 +19,7 @@ class User extends Entity
     protected function init() {
 
         $this->user_id = 0;
+        $this->disabled = 0;
     }
 
     /**

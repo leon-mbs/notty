@@ -10,7 +10,8 @@ use \App\Entity\User;
  */
 class System
 {
-
+    public const CURR_VERSION = "2.0.0";
+  
     /**
      * Возвращает  текущего  юзера
      * @return  User

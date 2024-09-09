@@ -27,7 +27,101 @@
         <script src="/assets/js/vue/vue.min.js"></script>     
         <script src="/assets/js/vue/httpvueloader.js"></script>     
  
+      <script>
+ 
+       
+  function checkFormInput(id){
+    var ret = true
+    
+    $('#'+id+' input ').each(
+        function(index){  
+                   
+            var input = $(this);
+            
+            var v =   input.get(0).reportValidity() 
+            if(!v) {
+               ret =  false
+            }
+            
+        }
+    );   
+     
+    return ret
+  }
+  
+  //сокращенный  вызов callPageMethod
+  function  callPM(method,params,postdata,callback =null   , callerror=null     )
+  {
+      try{
       
+          if(postdata){
+             postdata =    JSON.stringify(postdata)
+          }
+          
+          callPageMethod(method,params,postdata,(datad)=>
+          {
+//               console.log(datad) 
+               
+               try{
+                  var data = JSON.parse(datad)
+                  callback(data)                  
+               }
+               catch(error) {
+                   console.log(error)           
+                   console.log(data)           
+               }           
+               
+            
+          } , (error)=> 
+          {
+               console.log(method+" "+error) 
+               if(callerror) {
+                   callerror(error)
+               }
+            
+          });
+      
+      }
+      catch(error) {
+           console.log(method+" "+error)           
+      }
+  }     
+     
+        //проверка  ответа  на  ошибки
+        function checkPMAnswer(ret){
+            
+            if(ret.error)  {
+                toastr.error(ret.error,{'timeOut':'5000'} )   
+                return  false;
+            }
+            if(ret.success)  {
+                toastr.success(ret.success )   
+  
+            }
+            return  true;
+        }       
+       
+       
+    
+     
+      function parseVal(v){
+          var _v = Number.parseFloat( fixInput(v) )
+          if (Number.isNaN(_v)) {
+            return 0;
+          }
+          return  _v        
+      }
+    
+ 
+    function arrayRemove(arr, value) { 
+    
+        return arr.filter(function(ele){ 
+            return ele != value; 
+        });
+    }        
+       
+          
+     </script>     
 </head>
 
 <body class="dark-mode">

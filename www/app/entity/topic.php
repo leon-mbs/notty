@@ -13,9 +13,30 @@ class Topic extends \ZCL\DB\Entity
 
     protected function init() {
         $this->topic_id = 0;
-        $this->ispublic = 0;
+        $this->state = 0;
     }
 
+
+    protected function beforeSave() {
+        parent::beforeSave();
+        //упаковываем  данные в detail
+      //  $this->content = "<content>";
+
+      //  $this->content .= "<detail><![CDATA[{$this->detail}]]></detail>";
+      //  $this->content .= "</content>";
+
+        return true;
+    }
+
+    protected function afterLoad() {
+        //распаковываем  данные из detail
+    //    $xml = @simplexml_load_string($this->content);
+
+     //   $this->detail = (string)($xml->detail[0]);
+
+        parent::afterLoad();
+    }    
+    
     /**
      * список топиков  для  узла
      * 
