@@ -21,44 +21,20 @@ class Base extends \Zippy\Html\WebPage
 
         global $_config;
 
-        $this->_tvars["nologin"] = $_config['common']['nologin']==1;
  
         $this->add(new ClickLink("logout", $this, "OnExit"));
 
         $user = System::getUser();
 
-        
-        if($this->_tvars["nologin"] ==true){
-           $user =  User::getByLogin('admin') ;
-           System::setUser($user);       
+     
+        if ($user->user_id == 0) {
+           App::Redirect("\\App\\Pages\\UserLogin");
+           return;
         }
-        if($this->_tvars["nologin"] ==false){
-        
-            if ($_COOKIE['remember'] && $user->user_id == 0) {
-                $arr = explode('_', $_COOKIE['remember']);
-                
-                if ($arr[0] > 0 && $arr[1] === md5($arr[0] . $_config['common']['salt'])) {
-                    $user = User::load($arr[0]);
-                }
-
-                if ($user instanceof User) {
-
-
-                    System::setUser($user);
-                }
-            }
-            $user = System::getUser();
-            if ($user->user_id == 0) {
-                if ($this instanceof UserLogin) {
-                    
-                } else {
-                    App::Redirect("\\App\\Pages\\UserLogin");
-                }
-            }
-        }
+   
         $this->_tvars["username"] = $user->user_id == 0 ? "" : $user->username;
-        $this->_tvars["admin"] = $user->username == 'admin';
-     }
+        $this->_tvars["isadmin"] = $user->username == 'admin';
+    }
 
     public function OnExit($sender) {
 
@@ -68,47 +44,52 @@ class Base extends \Zippy\Html\WebPage
         App::Redirect("\\App\\Pages\\UserLogin");
     }
 
-    //вывод ошибки,  используется   в дочерних страницах
-    public function setError($msg) {
+    public function setError($msg ) {
         System::setErrorMsg($msg);
     }
+   
 
-    public function setSuccess($msg) {
-        System::setSuccesMsg($msg);
+    public function setSuccess($msg ) {
+        System::setSuccessMsg($msg);
     }
 
-    public function setWarn($msg) {
-        System::setWarnMsg($msg);
+    public function setWarn($msg ) {
+           System::setWarnMsg($msg);
     }
 
-    public function setInfo($msg) {
+    public function setInfo($msg ) {
         System::setInfoMsg($msg);
     }
 
     final protected function isError() {
-        return strlen(System::getErrorMsg()) > 0;
+        return (strlen(System::getErrorMsg()) > 0 || strlen(System::getErrorMsg()) > 0);
     }
-
-    protected function beforeRender() {
-   }
-
+    
+    
     protected function afterRender() {
-        if (strlen(System::getErrorMsg()) > 0)
-            App::$app->getResponse()->addJavaScript("toastr.error('" . System::getErrorMsg() . "')        ", true);
-        if (strlen(System::getWarnMsg()) > 0)
-            App::$app->getResponse()->addJavaScript("toastr.warning('" . System::getWarnMsg() . "')        ", true);
-        if (strlen(System::getSuccesMsg()) > 0)
-            App::$app->getResponse()->addJavaScript("toastr.success('" . System::getSuccesMsg() . "')        ", true);
-        if (strlen(System::getInfoMsg()) > 0)
-            App::$app->getResponse()->addJavaScript("toastr.info('" . System::getInfoMsg() . "')        ", true);
 
+        $user = System::getUser();
+        if (strlen(System::getErrorMsg() ?? '') > 0) {
 
+            $this->addJavaScript("toastr.error('" . System::getErrorMsg() . "','',{'timeOut':'8000'})        ", true);
+        }
+
+        if (strlen(System::getWarnMsg() ?? '') > 0) {
+            $this->addJavaScript("toastr.warning('" . System::getWarnMsg() . "','',{'timeOut':'4000'})        ", true);
+        }
+        if (strlen(System::getSuccesMsg() ?? '') > 0) {
+            $this->addJavaScript("toastr.success('" . System::getSuccesMsg() . "','',{'timeOut':'2000'})        ", true);
+        }
+        if (strlen(System::getInfoMsg() ?? '') > 0) {
+            $this->addJavaScript("toastr.info('" . System::getInfoMsg() . "','',{'timeOut':'3000'})        ", true);
+        }
 
         $this->setError('');
         $this->setSuccess('');
-
         $this->setInfo('');
         $this->setWarn('');
+        
+        parent::afterRender()  ;
     }
 
      

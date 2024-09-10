@@ -19,7 +19,7 @@ try {
 
             \App\System::setUser($user);
             
-            $user->save() ;
+            
         }
     }
     $app = new \App\Application();

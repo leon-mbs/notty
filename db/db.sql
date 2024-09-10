@@ -79,6 +79,16 @@ ENGINE = MYISAM DEFAULT CHARSET = utf8 ;
 ALTER TABLE files
 ADD INDEX topic_id (topic_id);
 
+
+CREATE TABLE keyval (
+  keyd varchar(255) NOT NULL,
+  vald text NOT NULL,
+  PRIMARY KEY (keyd)
+)
+ENGINE = MYISAM DEFAULT CHARSET = utf8 ;
+
+
+
 CREATE 
 VIEW topicsview
 AS
