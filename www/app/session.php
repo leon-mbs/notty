@@ -34,5 +34,10 @@ class Session
         }
         return $_SESSION['App_session'];
     }
-
+ 
+    public function clean() {
+        $this->values = array();
+        $this->filter = array();
+     
+    }
 }

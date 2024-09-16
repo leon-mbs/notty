@@ -32,15 +32,13 @@ class Base extends \Zippy\Html\WebPage
            return;
         }
    
-        $this->_tvars["username"] = $user->user_id == 0 ? "" : $user->username;
-        $this->_tvars["isadmin"] = $user->username == 'admin';
-    }
+      }
 
     public function OnExit($sender) {
 
         setcookie("remember", '', 0, '/');
         System::setUser(new \App\Entity\User());
-        $this->_tvars["username"] = "";
+
         App::Redirect("\\App\\Pages\\UserLogin");
     }
 

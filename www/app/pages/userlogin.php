@@ -19,13 +19,13 @@ class UserLogin extends \Zippy\Html\WebPage
     public function __construct() {
         parent::__construct();
 
-        $form = new \Zippy\Html\Form\Form('loginform');
+        $form = $this->add(new \Zippy\Html\Form\Form('loginform'));
         $form->onSubmit($this, 'onSubmit') ;
         $form->add(new TextInput('userlogin' ));
         $form->add(new TextInput('userpassword' ));
         $form->add(new \Zippy\Html\Form\CheckBox('remember'));
      
-        $this->add($form);
+        
     }
 
     public function onsubmit($sender) {
@@ -63,7 +63,7 @@ class UserLogin extends \Zippy\Html\WebPage
             }
         }
 
-        $sender->userpassworf->setText('');
+        $sender->userpassword->setText('');
     }
 
     public function setError($msg) {

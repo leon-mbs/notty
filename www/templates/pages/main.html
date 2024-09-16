@@ -7,7 +7,7 @@
     <body>
         <style>
             .list-group-item {
-                padding: 02px;;
+                padding: 2px;;
             }
         </style>
         
@@ -22,10 +22,10 @@
      <div class="col-md-4 col-12">
                <div class=" mb-1" style="height:30px;">
                    <a v-on:click.prevent="onNewNode"    v-show="selectedNode != null"  class="btn btn-primary btn-sm mr-2"             ><i class="fa fa-plus-circle"></i> Новий вузол</a>
-                   <a v-on:click.prevent="onEditNode"   v-show="selectedNode != null && selectedNode.pid > 0" title="Редагувати вузол" class=" mr-2" ><i  class="fa fa-edit"></i></a>
-                   <a v-on:click.prevent="onCutNode"    v-show="selectedNode != null && selectedNode.pid > 0" title="Вирізати" class=" mr-2"><i class="fa fa-cut"></i></a>
-                   <a v-on:click.prevent="onPasteNode"  v-show="selectedNode != null && selectedNode.pid > 0 && cpn != null" title="Вставити" class=" mr-2"><i class="fa fa-paste"></i></a>
-                   <a v-on:click.prevent="onDeleteNode" v-show="selectedNode != null && selectedNode.pid > 0" title="Вилучити" class=" mr-2"><i class="fa fa-trash"></i></a>
+                   <a v-on:click.prevent="onEditNode"   v-show="selectedNode != null && selectedNode.isowner" title="Редагувати вузол" class=" mr-2" ><i  class="fa fa-edit"></i></a>
+                   <a v-on:click.prevent="onCutNode"    v-show="selectedNode != null && selectedNode.isowner" title="Вирізати" class=" mr-2"><i class="fa fa-cut"></i></a>
+                   <a v-on:click.prevent="onPasteNode"  v-show="selectedNode != null && cpn != null" title="Вставити" class=" mr-2"><i class="fa fa-paste"></i></a>
+                   <a v-on:click.prevent="onDeleteNode" v-show="selectedNode != null && selectedNode.isowner" title="Вилучити" class=" mr-2"><i class="fa fa-trash"></i></a>
 
                 </div>
                 <div id="tree"  ></div>

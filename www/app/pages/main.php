@@ -7,6 +7,7 @@ use App\Entity\Node;
 use App\Entity\Topic;
 use App\Entity\TopicNode;
 use App\Helper;
+use App\System;
 use ZCL\BT\Tree;
 use Zippy\Html\Form\Button;
 use Zippy\Html\Form\CheckBox;
@@ -28,7 +29,6 @@ class Main extends \App\Pages\Base
 {
     public function __construct() {
         parent::__construct();
-
 
     }
 
@@ -247,8 +247,8 @@ class Main extends \App\Pages\Base
         $tree = array();
 
 
-        $user = System::getUser();
-        $w = "state = 1 or  user_id={$user->user_id}  ";
+        $user = \App\System::getUser();
+        $w = "detail like '%<ispublic>1</ispublic>%' or  user_id={$user->user_id}  ";
         if ($user->username == 'admin') {
             $w = '';
         }
@@ -256,7 +256,6 @@ class Main extends \App\Pages\Base
         if (count($itemlist) == 0) { //добавляем  корень
             $root = new Node();
             $root->title = "//";
-            $root->user_id = 0;
             $root->ispublic = 1;
             $root->state = array('expanded'=>true) ;
 
@@ -273,20 +272,24 @@ class Main extends \App\Pages\Base
             $node->id = $item->node_id;
             $node->pid = $item->pid;
             $node->text = $item->title;
-            $node->ispublic = $item->ispublic;
+            $node->ispublic = $item->ispublic==1;
+            $node->isowner = $item->user_id==$user->user_id || $user->username=='admin';
 
-            if ($node->ispublic == 1) {
+             if ($node->ispublic  ) {
                 $node->icon = 'fa fa-users fa-xs';
             } else {
                 $node->icon = 'fa fa-lock fa-xs';
             }
+            if ($node->pid==0  ) {
+                $node->icon='';
+                $node->isowner=false;
+            }
 
             if(in_array($node->id, $expanded)) {    //восстанавливаем развернутые
                 $node->state = array('expanded'=>true) ;
-
             }
 
-            if((@$nodelist[$node->pid]) instanceof Node2) {
+            if(($nodelist[$node->pid] ??null) instanceof Node2) {
                 if(!is_array($nodelist[$node->pid]->nodes)) {
                     $nodelist[$node->pid]->nodes  = array();
                 }
@@ -298,6 +301,8 @@ class Main extends \App\Pages\Base
         }
         foreach($nodelist as $n) {
             if($n->pid==0) {
+             //   $n->ispublic = 1;
+            //    $n->icon = 'fa fa-users fa-xs';
                 $tree[]=$n;
             }
         }

@@ -11,7 +11,11 @@ namespace App\Entity;
 class Topic extends \ZCL\DB\Entity
 {
 
-    protected function init() {
+     public const PRIVATE       = 0;   
+     public const PUBLIC        = 1;   
+     public const OUTER         = 2;   
+ 
+     protected function init() {
         $this->topic_id = 0;
         $this->state = 0;
     }
@@ -19,20 +23,25 @@ class Topic extends \ZCL\DB\Entity
 
     protected function beforeSave() {
         parent::beforeSave();
-        //упаковываем  данные в detail
-      //  $this->content = "<content>";
 
-      //  $this->content .= "<detail><![CDATA[{$this->detail}]]></detail>";
-      //  $this->content .= "</content>";
+        $this->detail = "<detail>";
+   //     $this->detail .= "<access><![CDATA[{$this->detail}]]></access>";
+     
+        $this->detail .= "</detail>";
 
         return true;
     }
 
     protected function afterLoad() {
-        //распаковываем  данные из detail
-    //    $xml = @simplexml_load_string($this->content);
-
-     //   $this->detail = (string)($xml->detail[0]);
+        //для совместимости
+        if(strpos($this->content,'')===0) {
+          $xml = @simplexml_load_string($this->content);
+          $this->content = (string)($xml->detail[0]);
+            
+        }
+        
+        $xml = @simplexml_load_string($this->detail);
+       // $this->access = (string)($xml->access[0]);
 
         parent::afterLoad();
     }    
