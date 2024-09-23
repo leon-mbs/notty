@@ -3,6 +3,7 @@
 namespace App;
 
 use \App\Entity\User;
+ 
 use \ZCL\DB\DB as DB;
 
 /**
@@ -87,6 +88,37 @@ class Helper
             self::setKeyVal('salt', $salt);
         }
         return $salt;
+    }
+     
+  public static function addFile($file, $topic_id) {
+   
+       
+        $f = new  \App\Entity\File();
+        $f->topic_id = $topic_id;
+        $f->filename = $file['name'];
+        $f->content = file_get_contents($file['tmp_name']);
+        $f->save();
+ 
+    }
+
+    public static function deleteFile($file_id) {
+        $conn = \ZDB\DB::getConnect();
+        $conn->Execute("delete  from  files  where  file_id={$file_id}");
+
+    }
+
+    public static function findFileByTopic($topic_id) {
+        $list= \App\Entity\File::find("topic_id=".$topic_id) ;
+
+        $ret = array();
+        foreach ($list as $f) {
+           
+            $f->content=null;;
+
+            $ret[] =  $f;
+        }
+
+        return $ret;
     }
         
 }

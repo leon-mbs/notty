@@ -34,7 +34,7 @@ class Topic extends \ZCL\DB\Entity
 
     protected function afterLoad() {
         //для совместимости
-        if(strpos($this->content,'')===0) {
+        if(strpos($this->content,'<detail>')===0) {
           $xml = @simplexml_load_string($this->content);
           $this->content = (string)($xml->detail[0]);
             

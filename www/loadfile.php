@@ -1,4 +1,4 @@
-<?php
+    <?php
 require_once 'init.php';
 
         if (!is_numeric($_REQUEST['id']))

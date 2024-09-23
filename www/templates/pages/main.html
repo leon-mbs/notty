@@ -19,7 +19,7 @@
    <div class="row" id="vapp">
      <div class="  col-12" >
      <div class="row">
-     <div class="col-md-4 col-12">
+     <div class="col-12 col-md-6 col-xl-4 ">
                <div class=" mb-1" style="height:30px;">
                    <a v-on:click.prevent="onNewNode"    v-show="selectedNode != null"  class="btn btn-primary btn-sm mr-2"             ><i class="fa fa-plus-circle"></i> Новий вузол</a>
                    <a v-on:click.prevent="onEditNode"   v-show="selectedNode != null && selectedNode.isowner" title="Редагувати вузол" class=" mr-2" ><i  class="fa fa-edit"></i></a>
@@ -32,74 +32,70 @@
                
 
     </div>        
-     <div class="col-md-8 col-12" v-show="selectedNode != null">
-         <div class="row">
-           <div class="col-md-5 col-12">
-                <div class=" mb-1" style="height:30px;">
-                            <a v-on:click.prevent="onNewTopic()" class="btn btn-primary btn-sm  mr-2"   ><i  class="fa fa-plus-circle"></i> Новий топік</a>
-                            <a v-on:click.prevent="onEditTopic()" v-show="selectedTopic != null" title="Редагувати"  class=" mr-2"><i class="fa fa-edit"></i></a>
-                            <a v-on:click.prevent="onCutTopic"   v-show="selectedTopic != null" title="Вирізати"  class=" mr-2"><i class="fa fa-cut"></i></a>
-                            <a v-on:click.prevent="onCopyTopic"  v-show="selectedTopic != null" title="Копіювати для вставки  як   копію"  class=" mr-2"><i class="fa fa-copy"></i></a>
-                            <a v-on:click.prevent="onCopyLinkTopic" v-show="selectedTopic != null" title="Копіювати для вставки  як посилання"  class=" mr-2"><i                                     class="fa fa-external-link-alt"></i></a>
-                            <a v-on:click.prevent="onPasteTopic" v-show="cpt != null || cptl != null" title="Вставити"  class=" mr-2"><i class="fa fa-paste"></i></a>
-                            <a v-on:click.prevent="onDelTopic" v-show="selectedTopic != null" title="Вилучити"  class=" mr-2"><i class="fa fa-trash"></i></a>
-                            <a v-bind:href="extlink" v-show="selectedTopic != null && selectedNode.ispublic==true " title="Зовнішнє посилання для перегляду топіка"  target="_blank" class=" mr-2"><i                                    class="fa      fa-link"></i></a>
-                        </div>           
-               <table class="table table-sm table-hover">
-               <tr v-for="t in topics"    v-bind:class="{'bg-success':issel(t.topic_id)}" >
-                   <td     > <a v-on:click.prevent="onTopic(t)">  {{t.title}}</a> </td>
-                    
-                   
-                   <td class="text-right"><a v-on:click.prevent="onFav(t)"><small>
-                       <i v-show="t.fav==true"   class="fas fa-star"></i>
-                       <i v-show="t.fav==false"  class="far fa-star"></i>
-                       </small></a></td>
-               </tr>
-               </table>
-          </div>        
-           <div class="col-md-7 col-12" v-show="selectedTopic != null">
-                <div   class="row">
-                    <div class="col-12">
-                      <div v-html="topicData"></div>     
-                                                  
-                   </div>
-                   <div class="col-12">
-
-                        <table class="table table-sm">
-                            <tr>
-                                <td style="width:20px;"><i title="Теги" class="fa fa-tags"  style="font-weight:                                        bolder;font-size:16px;"></i>
-                                </td>
-                                <td><a v-on:click.prevent="onTag(tag)" v-for="tag in topicTags" class="mr-2"  >{{tag}}</a></td>
-
-                                <td style="width:20px;">
-                                    <i title="Прикріплені файли" class="fa           fa-paperclip"      style="font-weight:   bolder;font-size:16px;"></i>
-                                </td>
-                                <td>
-                                    <div v-for="f in topicFiles"  style="display:inline;;margin:2px;">
-                                        <a v-bind:href="f.link"  target="_blank" >{{f.filename}}</a>
-                                        <a v-on:click.prevent="onDelFile(f.file_id)" ><i style="color:red;font-size: smaller;"   class="fa  fa-times-circle  "></i> </a>
-                                    </div>
-                                    <a v-on:click.prevent="onAddFile" title="Додати файл"  ><i    class="fa   fa-upload ml-2"></i></a>
-                                </td>
-                            </tr>
-                        </table>
-
-                    </div>
-
-
-                </div>                
+ 
+       <div class=" col-xl-4 col-md-6 col-12" v-show="selectedNode != null">
+            <div class=" mb-1" style="height:30px;">
+                        <a v-on:click.prevent="onNewTopic()" class="btn btn-primary btn-sm  mr-2"   ><i  class="fa fa-plus-circle"></i> Новий топік</a>
+                        <a v-on:click.prevent="onEditTopic()" v-show="selectedTopic != null" title="Редагувати"  class=" mr-2"><i class="fa fa-edit"></i></a>
+                        <a v-on:click.prevent="onCutTopic"   v-show="selectedTopic != null" title="Вирізати"  class=" mr-2"><i class="fa fa-cut"></i></a>
+                        <a v-on:click.prevent="onCopyTopic"  v-show="selectedTopic != null" title="Копіювати для вставки  як   копію"  class=" mr-2"><i class="fa fa-copy"></i></a>
+                        <a v-on:click.prevent="onCopyLinkTopic" v-show="selectedTopic != null" title="Копіювати для вставки  як посилання"  class=" mr-2"><i                                     class="fa fa-external-link-alt"></i></a>
+                        <a v-on:click.prevent="onPasteTopic" v-show="cpt != null || cptl != null" title="Вставити"  class=" mr-2"><i class="fa fa-paste"></i></a>
+                        <a v-on:click.prevent="onDelTopic" v-show="selectedTopic != null" title="Вилучити"  class=" mr-2"><i class="fa fa-trash"></i></a>
+                        <a v-bind:href="extlink" v-show="selectedTopic != null && selectedNode.ispublic==true " title="Зовнішнє посилання для перегляду топіка"  target="_blank" class=" mr-2"><i                                    class="fa      fa-link"></i></a>
+                    </div>           
+           <table class="table table-sm table-hover">
+           <tr v-for="t in topics"    v-bind:class="{'bg-success':issel(t.topic_id)}" >
+               <td     > <a v-on:click.prevent="onTopic(t)">  {{t.title}}</a> </td>
                 
-          </div>        
-        </div>        
-     </div>        
+               
+               <td class="text-right"><a v-on:click.prevent="onFav(t)"><small>
+                   <i v-show="t.fav==true"   class="fas fa-star"></i>
+                   <i v-show="t.fav==false"  class="far fa-star"></i>
+                   </small></a></td>
+           </tr>
+           </table>
+      </div>        
+       <div class=" col-xl-4 col-md-8 col-12" v-show="selectedTopic != null  && selectedNode != null">
+            <div   class="row">
+                <div class="col-12">
+                  <div v-html="topicData"></div>     
+                                              
+               </div>
+               <div class="col-12">
+
+                    <table class="table table-sm">
+                        <tr>
+                            <td style="width:20px;"><i title="Теги" class="fa fa-tags"  style="font-weight:                                        bolder;font-size:16px;"></i>
+                            </td>
+                            <td><a style="cursor:pointer" v-on:click.prevent="onTag(tag)" v-for="tag in topicTags" class="mr-2"  >{{tag}}</a></td>
+
+                            <td style="width:20px;">
+                                <i title="Прикріплені файли" class="fa           fa-paperclip"      style="font-weight:   bolder;font-size:16px;"></i>
+                            </td>
+                            <td>
+                                <div v-for="f in topicFiles"  style="display:inline;;margin:2px;">
+                                    <a v-bind:href="f.link"  target="_blank" >{{f.filename}}</a>
+                                    <a v-on:click.prevent="onDelFile(f.file_id)" ><i style="color:red;font-size: smaller;"   class="fa  fa-times-circle  "></i> </a>
+                                </div>
+                                <a v-on:click.prevent="onAddFile" title="Додати файл"  ><i    class="fa   fa-upload ml-2"></i></a>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+
+
+            </div>                
+            
+      </div>        
+   
   </div>        
      <div class="row">
-            <div class="col-12">
-                <hr>
-            </div>
+        
 
-            <div class="col-sm-12">
-              
+            <div class="col-12 col-xl-10">
+                 <hr>
                     <div class="navbar nav">
                         <form class="form-inline"  >
 
@@ -210,7 +206,7 @@
                                 <select v-model="editAccType" style="width:200px"  class="form-control">
                                      <option value="0">Приватний</option>
                                      <option value="1">Публiчний</option>
-                                     <option value="2">Спiльне реагування</option>
+                                     <option value="2">Зовнiшнiй доступ</option>
                                 </select>
                             </div>
                               <div class="form-group">

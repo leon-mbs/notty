@@ -36,14 +36,14 @@ class Main extends \App\Pages\Base
         $cr = json_decode($post) ;
         $ret = array();
         $l = array();
-        if($cr->fav == true) {
+        if(($cr->fav ?? false) == true) {
             $l = TopicNode::searchFav();
         }
-        if(strlen($cr->tag) >0) {
+        if(strlen($cr->tag ??'') >0) {
             $l = TopicNode::searchByTag($cr->tag)    ;
         }
-        if(strlen($cr->text) > 0) {
-            $l =  TopicNode::searchByText($cr->text, $cr->type, $cr->title);
+        if(strlen($cr->text ??'') > 0) {
+            $l =  TopicNode::searchByText($cr->text, $cr->type??1, $cr->title??'');
         }
 
 
@@ -155,7 +155,7 @@ class Main extends \App\Pages\Base
 
 
         $topic->title = $post->title;
-        $topic->detail = $post->data;
+        $topic->content = $post->data;
         $topic->acctype = $post->acctype;
 
         if (strlen($topic->title) == 0) {
@@ -301,8 +301,8 @@ class Main extends \App\Pages\Base
         }
         foreach($nodelist as $n) {
             if($n->pid==0) {
-             //   $n->ispublic = 1;
-            //    $n->icon = 'fa fa-users fa-xs';
+                $n->ispublic = 1;
+                $n->icon = 'fa fa-users fa-xs';
                 $tree[]=$n;
             }
         }
@@ -319,7 +319,7 @@ class Main extends \App\Pages\Base
 
         $ret = array();
         $ret['acctype'] = $t->acctype;
-        $ret['detail'] = $t->detail;
+        $ret['detail'] = $t->content;
         $ret['tags'] = $t->getTags();
         $ret['files'] = array();
 
@@ -373,6 +373,7 @@ class Node2
     public $icon;
     public $title;
     public $ispublic;
+    public $isowner;
     public $nodes = null;
     public $state = array();
 }

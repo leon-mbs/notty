@@ -63,7 +63,7 @@ class TopicNode extends \ZCL\DB\Entity
      */
     public static function searchByTag($tag) {
 
-        $sql = "  select * from topicnodeview   where topic_id in (select topic_id from tags where tagvalue  = " . Topic::qstr($tag) . " ) and  user_id=" . \App\System::getUser()->user_id;
+        $sql = "  select * from topicnodeview   where topic_id in (select topic_id from tags where tagvalue  = " . Topic::qstr($tag) . " )  " ;
 
         $list = TopicNode::findBySql($sql);
 
