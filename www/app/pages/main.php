@@ -102,9 +102,8 @@ class Main extends \App\Pages\Base
             $topic = Topic::load($args[1]);
 
             if ($topic->acctype > 0 && $node->ispublic != 1) {
-                $this->setError("Не можна додавати приватний топік у публічний вузол");
+                return "Нельзя добавлять публичный топик к приватному узлу";
 
-                return;
             }
             $topic->removeFromNode($this->clipboard[3]);
             $topic->addToNode($this->tree->selectedNodeId());
@@ -115,9 +114,8 @@ class Main extends \App\Pages\Base
             $topic = Topic::load($args[1]);
 
             if ($topic->acctype > 0 && $node->ispublic != 1) {
-                $this->setError("Не можна додавати приватний топік у публічний вузол");
+                return "Нельзя добавлять публичный топик к приватному узлу";
 
-                return;
             }
             $newtopic = new Topic();
             $newtopic->user_id = System::getUser()->user_id;
@@ -159,13 +157,13 @@ class Main extends \App\Pages\Base
         $topic->acctype = $post->acctype;
 
         if (strlen($topic->title) == 0) {
-            return 'Не введено заголовок';
+            return 'Не введен заголовок';
         }
 
 
         $node = Node::load($args[1]);
         if ($topic->acctype > 0 && $node->ispublic != 1) {
-            return "Не можна додавати приватний топік у публічний вузол" ;
+            return "Нельзя добавлять пуьбличный топик  к приватному узлу " ;
         }
 
         $topic->save();
@@ -195,7 +193,7 @@ class Main extends \App\Pages\Base
             $node->ispublic = $args[2]=="true" ? 1 : 0;
             if ($parent->ispublic == 0 && $node->ispublic == 1) {
 
-                return "Не можна додавати публічний вузол до приватного" ;
+                return "Нельзя добавлять публичный узел к приватному" ;
             }
 
             $node->save();
@@ -208,7 +206,7 @@ class Main extends \App\Pages\Base
             $node->ispublic = $args[2]=="true" ? 1 : 0;
             $parent = Node::load($node->pid);
             if ($parent->ispublic == 0 && $node->ispublic == 1) {
-                return "Не можна додавати публічний вузол до приватного" ;
+                return "Нельзя добавлять публичный узел к приватному" ;
             }
 
             $node->save();
@@ -231,7 +229,7 @@ class Main extends \App\Pages\Base
             if (strpos($dest->mpath, $node->mpath) === 0) {
 
 
-                return "Не можна переміщувати в свого спадкоємця";
+                return "Нельзя перемещать в  наследника";
             }
 
             $node->moveTo($dest->node_id);
