@@ -86,9 +86,9 @@ class Main extends \App\Pages\Base
 
         $conn = \ZCL\DB\DB::getConnect();
         if ($args[1]=="true") {
-            $conn->Execute("insert into note_fav (topic_id,user_id) values ({$args[0]}," . System::getUser()->user_id . ") ");
+            $conn->Execute("insert into  fav (topic_id,user_id) values ({$args[0]}," . System::getUser()->user_id . ") ");
         } else {
-            $conn->Execute("delete from note_fav where topic_id={$args[0]} and  user_id= " . System::getUser()->user_id);
+            $conn->Execute("delete from fav where topic_id={$args[0]} and  user_id= " . System::getUser()->user_id);
         }
 
     }
@@ -246,7 +246,7 @@ class Main extends \App\Pages\Base
 
 
         $user = \App\System::getUser();
-        $w = "detail like '%<ispublic>1</ispublic>%' or  user_id={$user->user_id}  ";
+        $w = "ispublic = 1 or  user_id={$user->user_id}  ";
         if ($user->username == 'admin') {
             $w = '';
         }
@@ -337,7 +337,7 @@ class Main extends \App\Pages\Base
     public function loadTopics($args, $post=null) {
 
         $conn = \ZCL\DB\DB::getConnect();
-        $res = $conn->Execute("select topic_id from note_fav where user_id= " . System::getUser()->user_id);
+        $res = $conn->Execute("select topic_id from fav where user_id= " . System::getUser()->user_id);
         $favorites = array();
         foreach ($res as $r) {
             $favorites[] = $r['topic_id'];

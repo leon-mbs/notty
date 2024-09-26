@@ -26,7 +26,7 @@ class Node extends TreeEntity
         parent::beforeSave();
 
         $this->detail = "<detail>";
-        $this->detail .= "<ispublic>{$this->ispublic}</ispublic>";
+   //     $this->detail .= "<ispublic>{$this->ispublic}</ispublic>";
       //  $this->detail .= "<access><![CDATA[{$this->detail}]]></access>";
         $this->detail .= "</detail>";
 
@@ -36,7 +36,7 @@ class Node extends TreeEntity
     protected function afterLoad() {
         
         $xml = @simplexml_load_string($this->detail);
-        $this->ispublic = (int)($xml->ispublic[0] ??0);
+    //    $this->ispublic = (int)($xml->ispublic[0] ??0);
 
         parent::afterLoad();
     } 
