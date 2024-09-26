@@ -52,7 +52,9 @@ class Topic extends \ZCL\DB\Entity
      * @param mixed $node_id
      */
     public static function findByNode($node_id) {
-        return self::find("topic_id in (select topic_id from topicnode where node_id={$node_id})");
+        $user_id=\App\System::getUser()->user_id;
+   
+        return self::find(" (acctype=0 or user_id={$user_id} ) and topic_id in (select topic_id from topicnode where node_id={$node_id})");
     }
 
     /**
@@ -139,4 +141,7 @@ class Topic extends \ZCL\DB\Entity
         return $conn->GetCol("select distinct tagvalue from tags where topic_id <> " . $this->topic_id);
     }
 
+    
+    
+    
 }

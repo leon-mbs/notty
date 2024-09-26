@@ -53,7 +53,7 @@ class Main extends \App\Pages\Base
                  "node_id" =>$t->node_id,
                  "title" =>$t->title,
                  "hash" =>md5($t->topic_id . \App\Helper::getSalt()),
-                 "nodes" =>$t->nodes()
+                 "nodes" =>Node::nodes($t->node_id)
             );
         }
 

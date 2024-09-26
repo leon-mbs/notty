@@ -31,6 +31,9 @@ class Base extends \Zippy\Html\WebPage
            App::Redirect("\\App\\Pages\\UserLogin");
            return;
         }
+        
+        $this->_tvars['username']  = $user->username; 
+        $this->_tvars['admin']  = $user->username==="admin"; 
    
       }
 

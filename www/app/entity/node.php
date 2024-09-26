@@ -66,4 +66,18 @@ class Node extends TreeEntity
         return $list;
     }
 
+    /**
+     * цепочка  названий узлов до  корня
+     * 
+     */
+    public static function nodes($node_id) {
+
+        $node = Node::load($node_id);
+        $list = $node->getParents();
+        $list = array_reverse($list);
+
+        $path = implode(" > ", $list);
+        return $path;
+    }    
+    
 }

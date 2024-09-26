@@ -39,10 +39,10 @@
                         <a v-on:click.prevent="onEditTopic()" v-show="selectedTopic != null" title="Редагувати"  class=" mr-2"><i class="fa fa-edit"></i></a>
                         <a v-on:click.prevent="onCutTopic"   v-show="selectedTopic != null" title="Вирізати"  class=" mr-2"><i class="fa fa-cut"></i></a>
                         <a v-on:click.prevent="onCopyTopic"  v-show="selectedTopic != null" title="Копіювати для вставки  як   копію"  class=" mr-2"><i class="fa fa-copy"></i></a>
-                        <a v-on:click.prevent="onCopyLinkTopic" v-show="selectedTopic != null" title="Копіювати для вставки  як посилання"  class=" mr-2"><i                                     class="fa fa-external-link-alt"></i></a>
+                        <a v-on:click.prevent="onCopyLinkTopic" v-show="selectedTopic != null" title="Копіювати для вставки  як посилання"  class=" mr-2"><i       class="fa fa-external-link-alt"></i></a>
                         <a v-on:click.prevent="onPasteTopic" v-show="cpt != null || cptl != null" title="Вставити"  class=" mr-2"><i class="fa fa-paste"></i></a>
                         <a v-on:click.prevent="onDelTopic" v-show="selectedTopic != null" title="Вилучити"  class=" mr-2"><i class="fa fa-trash"></i></a>
-                        <a v-bind:href="extlink" v-show="selectedTopic != null && selectedNode.ispublic==true " title="Зовнішнє посилання для перегляду топіка"  target="_blank" class=" mr-2"><i                                    class="fa      fa-link"></i></a>
+                        <a v-bind:href="extlink" v-show="selectedTopic != null && selectedNode.ispublic==true " title="Зовнішнє посилання для перегляду топіка"  target="_blank" class=" mr-2"><i       class="fa      fa-link"></i></a>
                     </div>           
            <table class="table table-sm table-hover">
            <tr v-for="t in topics"    v-bind:class="{'bg-success':issel(t.topic_id)}" >
