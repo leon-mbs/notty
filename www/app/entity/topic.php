@@ -17,7 +17,7 @@ class Topic extends \ZCL\DB\Entity
  
      protected function init() {
         $this->topic_id = 0;
-        $this->state = 0;
+        $this->acctype = 0;
     }
 
 
@@ -25,8 +25,7 @@ class Topic extends \ZCL\DB\Entity
         parent::beforeSave();
 
         $this->detail = "<detail>";
-   //     $this->detail .= "<access><![CDATA[{$this->detail}]]></access>";
-     
+        $this->detail .= "<updatedon>{$this->updatedon}</updatedon>";
         $this->detail .= "</detail>";
 
         return true;
@@ -41,7 +40,7 @@ class Topic extends \ZCL\DB\Entity
         }
         
         $xml = @simplexml_load_string($this->detail);
-       // $this->access = (string)($xml->access[0]);
+        $this->updatedon = (int)($xml->updatedon[0]);
 
         parent::afterLoad();
     }    

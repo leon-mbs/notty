@@ -17,3 +17,7 @@ body {
 .dark-mode a {
    color: #fff;
 }
+
+a{
+    cursor:pointer;
+}

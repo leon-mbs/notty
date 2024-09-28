@@ -109,7 +109,10 @@ class Main extends \App\Pages\Base
             $topic->addToNode($this->tree->selectedNodeId());
 
         }
-        if($args[0] =="pastel") {
+        if($args[0] =="pasteс") {   //вставка  как  перенос
+        
+        }
+        if($args[0] =="pastel") {   //вставка  как  ссылка
             $node = Node::Load($args[2]);
             $topic = Topic::load($args[1]);
 
@@ -121,7 +124,7 @@ class Main extends \App\Pages\Base
             $newtopic->user_id = System::getUser()->user_id;
             $newtopic->title = $topic->title;
             if ($node->node_id == $topic->node_id) {
-                $newtopic->title = $topic->title . " (Копія)";
+                $newtopic->title = $topic->title . " (Копия)";
             }
             $newtopic->detail = $topic->detail;
             $newtopic->save();
@@ -166,6 +169,7 @@ class Main extends \App\Pages\Base
             return "Нельзя добавлять пуьбличный топик  к приватному узлу " ;
         }
 
+        $topic->updatedon=time();
         $topic->save();
         $tags = trim($post->tags) ;
         if(strlen($tags)>0) {
