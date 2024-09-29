@@ -1,6 +1,6 @@
 <?php
 if (strpos($_SERVER['REQUEST_URI'], 'index.php') > 1) {
-    die('Сайт розміщено не в кореневій папці');
+    die('Сайт размещен не в корневой директории');
 }
 require_once 'init.php';
 
@@ -16,10 +16,7 @@ try {
 
         if ($user instanceof \App\Entity\User) {
             \App\Session::getSession()->clean();
-
             \App\System::setUser($user);
-            
-            
         }
     }
     $app = new \App\Application();
@@ -28,7 +25,6 @@ try {
 
 } catch (Exception $e) {
     if ($e instanceof ADODB_Exception) {
-
         \ZCL\DB\DB::getConnect()->CompleteTrans(false); // откат транзакции
     }
     $msg = $e->getMessage();

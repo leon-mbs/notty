@@ -97,32 +97,42 @@ class Main extends \App\Pages\Base
         if($args[0] =="delete") {
             Topic::delete($args[1]);
         }
-        if($args[0] =="paste") {
+        if($args[0] =="pasteс") {      //вставка  как  перенос
             $node = Node::Load($args[2]);
             $topic = Topic::load($args[1]);
 
             if ($topic->acctype > 0 && $node->ispublic != 1) {
                 return "Нельзя добавлять публичный топик к приватному узлу";
-
             }
-            $topic->removeFromNode($this->clipboard[3]);
-            $topic->addToNode($this->tree->selectedNodeId());
+            $tn = TopicNode::getFirst("topic_id={$args[1]} and node_id={$args[3]}") ;
+            if($tn==null) return;
+            $topic->removeFromNode($args[3]);
+            $topic->addToNode($args[2],$tn->islink==1);
 
-        }
-        if($args[0] =="pasteс") {   //вставка  как  перенос
-        
         }
         if($args[0] =="pastel") {   //вставка  как  ссылка
             $node = Node::Load($args[2]);
             $topic = Topic::load($args[1]);
+            if($args[2]==$args[3]) {
+                return;
+            }
+            if ($topic->acctype > 0 && $node->ispublic != 1) {
+                return "Нельзя добавлять публичный топик к приватному узлу";
+            }
+            $topic->addToNode($node->node_id,true);
+  
+        }
+        if($args[0] =="paste") {   //вставка  как  ссылка
+            $node = Node::Load($args[2]);
+            $topic = Topic::load($args[1]);
 
             if ($topic->acctype > 0 && $node->ispublic != 1) {
                 return "Нельзя добавлять публичный топик к приватному узлу";
-
             }
             $newtopic = new Topic();
             $newtopic->user_id = System::getUser()->user_id;
             $newtopic->title = $topic->title;
+            $newtopic->content = $topic->content;
             if ($node->node_id == $topic->node_id) {
                 $newtopic->title = $topic->title . " (Копия)";
             }
@@ -162,7 +172,7 @@ class Main extends \App\Pages\Base
         if (strlen($topic->title) == 0) {
             return 'Не введен заголовок';
         }
-
+ 
 
         $node = Node::load($args[1]);
         if ($topic->acctype > 0 && $node->ispublic != 1) {
@@ -321,10 +331,10 @@ class Main extends \App\Pages\Base
 
         $ret = array();
         $ret['acctype'] = $t->acctype;
-        $ret['detail'] = $t->content;
+        $ret['content'] = $t->content;
         $ret['tags'] = $t->getTags();
-        $ret['files'] = array();
-
+        $ret['files'] = [];
+       
         foreach(Helper::findFileByTopic($t->topic_id) as $f) {
             $ret['files'][] = array('file_id'=>$f->file_id,
              'filename'=>$f->filename ,
@@ -341,20 +351,28 @@ class Main extends \App\Pages\Base
     public function loadTopics($args, $post=null) {
 
         $conn = \ZCL\DB\DB::getConnect();
+
+        $favorites = [];
         $res = $conn->Execute("select topic_id from fav where user_id= " . System::getUser()->user_id);
-        $favorites = array();
         foreach ($res as $r) {
             $favorites[] = $r['topic_id'];
+        }
+        $links = [];
+        $res = $conn->Execute("select topic_id from topicnode where islink=1 and  node_id= ".$args[0] );
+        foreach ($res as $r) {
+            $links[] = $r['topic_id'];
         }
 
 
         $arr = array()  ;
         foreach(Topic::findByNode($args[0]) as $t) {
-            $t->fav = in_array($t->topic_id, $favorites)  ;
+             
             $arr[]=array(
              "title"=>$t->title,
-             "fav"=>$t->fav,
+             "fav"=>in_array($t->topic_id, $favorites),
              "topic_id"=>$t->topic_id,
+             'canedit' => true,
+             'islink' => in_array($t->topic_id, $links),
              "hash" =>md5($t->topic_id . \App\Helper::getSalt()),
              
              );
@@ -363,8 +381,6 @@ class Main extends \App\Pages\Base
         return json_encode($arr, JSON_UNESCAPED_UNICODE);
 
     }
-
-
 
 }
 

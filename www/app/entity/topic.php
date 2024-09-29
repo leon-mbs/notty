@@ -33,7 +33,7 @@ class Topic extends \ZCL\DB\Entity
 
     protected function afterLoad() {
         //для совместимости
-        if(strpos($this->content,'<detail>')===0) {
+        if(strpos($this->content,'<detail><![CDATA[')!==false) {
           $xml = @simplexml_load_string($this->content);
           $this->content = (string)($xml->detail[0]);
             
@@ -76,9 +76,10 @@ class Topic extends \ZCL\DB\Entity
      * 
      * @param mixed $node_id
      */
-    public function addToNode($node_id) {
+    public function addToNode($node_id,$islink=false) {
         $conn = \ZCL\DB\DB::getConnect();
-        $conn->Execute("insert into topicnode(topic_id,node_id)values({$this->topic_id},{$node_id})");
+        $conn->Execute("delete from topicnode where topic_id={$this->topic_id} and node_id = {$node_id} ");
+        $conn->Execute("insert into topicnode(topic_id,node_id,islink)values({$this->topic_id},{$node_id}," . ($islink ? 1:0  ). ")");
     }
 
     /**
@@ -140,6 +141,7 @@ class Topic extends \ZCL\DB\Entity
         return $conn->GetCol("select distinct tagvalue from tags where topic_id <> " . $this->topic_id);
     }
 
+   
     
     
     
