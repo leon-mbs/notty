@@ -42,6 +42,11 @@ class Node extends TreeEntity
     } 
     protected function beforeDelete() {
         $conn = \ZCL\DB\DB::getConnect();
+        $tlist= Topic::find("topic_id in (select topic_id from topicnode where node_id=" . $this->node_id. " and islink != 1  )" );
+        foreach($tlist as $t){
+            Topic::delete($t->topic_id);
+        }
+        
         $conn->Execute("delete from topicnode where node_id=" . $this->node_id);
 
         return '';

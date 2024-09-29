@@ -95,7 +95,14 @@ class Main extends \App\Pages\Base
 
     public function opTopic($args, $post=null) {
         if($args[0] =="delete") {
-            Topic::delete($args[1]);
+            if($args[3]=="true") {  //ссылка
+               $conn = \ZCL\DB\DB::getConnect();
+               $conn->Execute("delete from topicnode where topic_id={$args[1]} and node_id={$args[2]}" );
+ 
+            }
+            else {
+               Topic::delete($args[1]);
+            }
         }
         if($args[0] =="pasteс") {      //вставка  как  перенос
             $node = Node::Load($args[2]);
