@@ -104,7 +104,7 @@ class Main extends \App\Pages\Base
                Topic::delete($args[1]);
             }
         }
-        if($args[0] =="pasteс") {      //вставка  как  перенос
+        if($args[0] =="pastecopy") {      //вставка  как  перенос
             $node = Node::Load($args[2]);
             $topic = Topic::load($args[1]);
 
@@ -117,7 +117,7 @@ class Main extends \App\Pages\Base
             $topic->addToNode($args[2],$tn->islink==1);
 
         }
-        if($args[0] =="pastel") {   //вставка  как  ссылка
+        if($args[0] =="pastelink") {   //вставка  как  ссылка
             $node = Node::Load($args[2]);
             $topic = Topic::load($args[1]);
             if($args[2]==$args[3]) {
@@ -129,7 +129,7 @@ class Main extends \App\Pages\Base
             $topic->addToNode($node->node_id,true);
   
         }
-        if($args[0] =="paste") {   //вставка  как  ссылка
+        if($args[0] =="move") {   //вставка  как  ссылка
             $node = Node::Load($args[2]);
             $topic = Topic::load($args[1]);
 
@@ -190,7 +190,7 @@ class Main extends \App\Pages\Base
         $topic->save();
         $tags = trim($post->tags) ;
         if(strlen($tags)>0) {
-            $topic->saveTags(explode(",", $tags));
+            $topic->saveTags(explode(";", $tags));
         }
 
 
@@ -340,7 +340,9 @@ class Main extends \App\Pages\Base
         $ret['acctype'] = $t->acctype;
         $ret['content'] = $t->content;
         $ret['tags'] = $t->getTags();
+        $ret['sugs'] = $t->getSuggestionTags();
         $ret['files'] = [];
+       
        
         foreach(Helper::findFileByTopic($t->topic_id) as $f) {
             $ret['files'][] = array('file_id'=>$f->file_id,
@@ -373,13 +375,16 @@ class Main extends \App\Pages\Base
 
         $arr = array()  ;
         foreach(Topic::findByNode($args[0]) as $t) {
-             
+            $islink =in_array($t->topic_id, $links)  ;
             $arr[]=array(
              "title"=>$t->title,
              "fav"=>in_array($t->topic_id, $favorites),
              "topic_id"=>$t->topic_id,
+             "acctype"=>$t->acctype,
              'canedit' => true,
-             'islink' => in_array($t->topic_id, $links),
+             'cancut' => true,
+             'canlink' => true,
+             'islink' =>$islink ,
              "hash" =>md5($t->topic_id . \App\Helper::getSalt()),
              
              );
