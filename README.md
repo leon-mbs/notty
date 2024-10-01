@@ -8,12 +8,10 @@ Notty
 Может использоваться  как  альтернатива Notion или Obsidian .
 
 
+ 
 
-[скриншот](http://zippy.com.ua/download/znote.jpg)
-[скриншот](http://zippy.com.ua/download/znote.png)
+[Домашняя страница](https://zippy.com.ua/notty)  
 
-
-[Домашняя страница](https://zippy.com.ua/notty)
 [Демо](https://notty.zippy.com.ua) вход admin admin
 
 #### Возможности

@@ -140,7 +140,7 @@ SELECT
     FROM topicnode
     WHERE (topicnode.node_id = nodes.node_id)) AS Name_exp_6
 FROM nodes;
-    FROM nodes;        
+          
    
 CREATE VIEW topicnodeview
 AS
