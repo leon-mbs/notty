@@ -7,17 +7,17 @@
             <h3>Профиль</h3>
             <form zippy="profileform" role="form" enctype="multipart/form-data">
             
-            
                 {{^admin}}
                 <div class="form-group">
-                    <label for="username">Логин</label>
-                    <input type="text" class="form-control" zippy="username" required="required">
+                    <label for="username">Имя</label>
+                    <input type="text" class="form-control" zippy="username"  >
                 </div>
-                 {{/admin}}
+                {{/admin}}
                 <div class="form-group">
                     <label for="password">Пароль</label>
                     <input type="password" class="form-control" zippy="password">
-                </div>
+                  <small  >Если пароль не  меняется    оставте пустым</small>
+                 </div>
                 <div class="form-group">
                     <label for="confirm">Подтверждение</label>
                     <input type="password" class="form-control" zippy="confirm">

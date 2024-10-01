@@ -45,7 +45,7 @@ class User extends Entity
      */
     public static function getByLogin($login) {
         $conn = \ZCL\DB\DB::getConnect();
-        return User::getFirst('username = ' . $conn->qstr($login));
+        return User::getFirst('userlogin = ' . $conn->qstr($login));
     }
 
     /**

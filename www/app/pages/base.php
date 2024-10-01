@@ -92,6 +92,8 @@ class Base extends \Zippy\Html\WebPage
         
         parent::afterRender()  ;
     }
-
+    public function addJavaScript($js, $docready = false) {
+        App::$app->getResponse()->addJavaScript($js, $docready);
+    }
      
 }

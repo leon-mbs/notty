@@ -18,6 +18,7 @@ class Topic extends \ZCL\DB\Entity
      protected function init() {
         $this->topic_id = 0;
         $this->acctype = 0;
+        $this->updatedon=time()  ;
     }
 
 
@@ -114,6 +115,9 @@ class Topic extends \ZCL\DB\Entity
         $conn->Execute("delete from tags where topic_id=" . $this->topic_id);
 
         foreach ($tags as $tag) {
+            $tag = trim($tag);
+            if(strlen($tag)==0) continue;
+            
             $conn->Execute("insert tags (topic_id,tagvalue) values (" . $this->topic_id . "," . $conn->qstr($tag) . ")");
         }
     }
@@ -127,7 +131,7 @@ class Topic extends \ZCL\DB\Entity
         $conn = \ZCL\DB\DB::getConnect();
         $rc = $conn->GetCol("select distinct tagvalue from tags where topic_id=" . $this->topic_id);
         foreach($rc as $k=>$v){
-           if(strlen($v))$tl[$k] = $v;
+           if(strlen($v)>0)$tl[$k] = $v;
         }
         return $tl;
     }

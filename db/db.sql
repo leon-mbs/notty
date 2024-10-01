@@ -54,7 +54,7 @@ ALTER TABLE tags
 ADD INDEX topic_id (topic_id);
 
 
-CREATE TABLE note_fav (
+CREATE TABLE fav (
   fav_id int NOT NULL AUTO_INCREMENT,
   topic_id int NOT NULL,
   user_id int NOT NULL,
@@ -64,9 +64,10 @@ ENGINE = INNODB DEFAULT CHARSET = utf8 ;
 
 CREATE TABLE users (
   user_id int NOT NULL AUTO_INCREMENT,
-  username varchar(50) NOT NULL,
-  userpass varchar(50) NOT NULL,
-  publicname varchar(64) DEFAULT NULL,
+  user_id int NOT NULL AUTO_INCREMENT,
+  username varchar(64) DEFAULT NULL,
+  userpass varchar(255) NOT NULL,
+  userlogin varchar(50) NOT NULL,
   disabled tinyint(1) DEFAULT 0,
   PRIMARY KEY (user_id)
 )
