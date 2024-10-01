@@ -14,6 +14,7 @@ Notty
 
 
 [Домашняя страница](https://zippy.com.ua/notty)
+[Демо](https://notty.zippy.com.ua) вход admin admin
 
 #### Возможности
 * веб интерфейс
