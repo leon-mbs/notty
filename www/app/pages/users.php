@@ -26,8 +26,8 @@ class Users extends \App\Pages\Base
     public function __construct() {
         parent::__construct();
 
-        if (System::getUser()->username != 'admin') {
-            Application::RedirectURI("/");
+        if (System::getUser()->userlogin != 'admin') {
+          \App\Application::RedirectURI("/");
             return;
         }
 
@@ -35,7 +35,7 @@ class Users extends \App\Pages\Base
         $plist->add(new ClickLink('adduser',$this,'OnAddNew')) ;
         
 
-        $this->_ds = new EntityDataSource("\\App\\Entity\\User", "username <>  'admin'", "username asc");
+        $this->_ds = new EntityDataSource("\\App\\Entity\\User", "userlogin <>  'admin'", "userlogin asc");
         $plist->add(new DataView("userrow", $this->_ds, $this, 'OnRow'));
       
         $plist->userrow->Reload();

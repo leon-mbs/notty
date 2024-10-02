@@ -383,7 +383,7 @@ class Main extends \App\Pages\Base
              "topic_id"=>$t->topic_id,
              "ispublic"=>$t->ispublic==1,
              'canedit' => $user->user_id==$t->user_id,
-             'cancut' => true,
+     
              'isowner' => $user->user_id==$t->user_id,
              'islink' =>$islink ,
               

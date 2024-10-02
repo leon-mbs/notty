@@ -32,8 +32,8 @@ class Base extends \Zippy\Html\WebPage
            return;
         }
         
-        $this->_tvars['username']  = $user->username; 
-        $this->_tvars['admin']  = $user->username==="admin"; 
+        $this->_tvars['username']  = strlen($user->username)>0  ? $user->username : $user->userlogin ; 
+        $this->_tvars['admin']  = $user->userlogin==="admin"; 
    
       }
 

@@ -26,7 +26,7 @@
             <div class=" mb-1"  >
                         <a v-on:click.prevent="onNewTopic()" class="btn btn-primary btn-sm   " title="Новый топик"  ><i  class="fa fa-plus"></i></a> 
                         <a v-on:click.prevent="onEditTopic()" v-show="selectedTopic != null && selectedTopic.canedit==true" title="Редактироваать"  class="btn btn-sm btn-info  "><i class="fa fa-edit"></i></a>
-                        <a v-on:click.prevent="onCutTopic"   v-show="selectedTopic != null && selectedTopic.cancut==true" title="Вырезать"  class="btn btn-sm btn-info   "><i class="fa fa-cut"></i></a>
+                        <a v-on:click.prevent="onCutTopic"   v-show="selectedTopic != null && selectedTopic.isowner==true" title="Вырезать"  class="btn btn-sm btn-info   "><i class="fa fa-cut"></i></a>
                         <a v-on:click.prevent="onCopyTopic"  v-show="selectedTopic != null && selectedTopic.islink!=true" title="Копировать для вставки как копию "  class="btn btn-sm btn-info  "><i class="fa fa-copy"></i></a>
                         <a v-on:click.prevent="onCopyLinkTopic" v-show="selectedTopic != null && selectedTopic.islink!=true " title="Копировать для вставки  как  ссылку"  class="btn btn-sm btn-info  "><i       class="fa fa-share"></i></a>
                         <a v-on:click.prevent="onPasteTopic" v-show="clipboard.topic != null " title="Вставить"  class="btn btn-sm btn-info  "><i class="fa fa-paste"></i></a>
