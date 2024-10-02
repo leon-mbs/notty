@@ -21,7 +21,7 @@ CREATE TABLE nodes (
   mpath varchar(1024) NOT NULL,
   user_id int DEFAULT NULL,
   detail text DEFAULT NULL,
-  ispublic tinyint(1) DEFAULT NULL,
+  ispublic tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (node_id)
 )
 ENGINE = INNODB,
@@ -117,7 +117,7 @@ SELECT
   t.title AS title,
   t.content AS content,
   t.detail AS detail,
-  t.acctype AS acctype,
+  t.ispublic AS ispublic,
   t.user_id AS user_id,
   (CASE WHEN (COALESCE(u.username, '') = '') THEN u.userlogin ELSE u.username END) AS username
 FROM (topics t
@@ -150,9 +150,9 @@ SELECT
   topicnode.tn_id AS tn_id,
   topicnode.islink AS islink,
   topics.title AS title,
-  topics.acctype AS acctype,
+  topics.ispublic AS ispublict,
   topics.content AS content,
-  nodes.ispublic AS ispublic,
+  nodes.ispublic AS ispublicn,
   nodes.user_id AS nuser_id,
   topics.user_id AS tuser_id
 FROM ((topics

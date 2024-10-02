@@ -37,7 +37,7 @@ class TopicNode extends \ZCL\DB\Entity
         }
 
 
-        $where =  "  (acctype=0 or tuser_id={$user_id} ) ";
+        $where =  "  (ispublict=1 or tuser_id={$user_id} ) ";
 
         foreach ($arr as $t) {
 
@@ -64,7 +64,7 @@ class TopicNode extends \ZCL\DB\Entity
     public static function searchByTag($tag) {
         $user_id=\App\System::getUser()->user_id;
    
-        $where = "   (acctype=0 or tuser_id={$user_id} ) and  topic_id in (select topic_id from tags where tagvalue  = " . Topic::qstr($tag) . " )  " ;
+        $where = "   (ispublict=1 or tuser_id={$user_id} ) and  topic_id in (select topic_id from tags where tagvalue  = " . Topic::qstr($tag) . " )  " ;
 
         $list = TopicNode::find($where);
 
@@ -76,7 +76,7 @@ class TopicNode extends \ZCL\DB\Entity
 
         $user_id=\App\System::getUser()->user_id;
         
-        $where = "   (acctype=0 or tuser_id={$user_id} ) and  topic_id in (select topic_id from fav where   user_id= {$user_id} )";
+        $where = "    topic_id in (select topic_id from fav where   user_id= {$user_id} )";
 
         $list = TopicNode::find($where);
 
