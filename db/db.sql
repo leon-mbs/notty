@@ -6,7 +6,7 @@ CREATE TABLE topics (
   content longtext,
   detail text  ,
   user_id int NOT NULL,
-  acctype tinyint NOT NULL DEFAULT 0,
+  ispublic tinyint NOT NULL DEFAULT 0,
   PRIMARY KEY (topic_id, user_id)
 )
 ENGINE = INNODB DEFAULT CHARSET = utf8 ;

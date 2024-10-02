@@ -108,7 +108,7 @@ class Main extends \App\Pages\Base
             $node = Node::Load($args[2]);
             $topic = Topic::load($args[1]);
 
-            if ($topic->acctype > 0 && $node->ispublic != 1) {
+            if ($topic->ispublic ==1 && $node->ispublic != 1) {
                 return "Нельзя добавлять публичный топик к приватному узлу";
             }
             $tn = TopicNode::getFirst("topic_id={$args[1]} and node_id={$args[3]}") ;
@@ -123,7 +123,7 @@ class Main extends \App\Pages\Base
             if($args[2]==$args[3]) {
                 return;
             }
-            if ($topic->acctype > 0 && $node->ispublic != 1) {
+            if ($topic->ispublic ==1 && $node->ispublic != 1) {
                 return "Нельзя добавлять публичный топик к приватному узлу";
             }
             $topic->addToNode($node->node_id,true);
@@ -133,7 +133,7 @@ class Main extends \App\Pages\Base
             $node = Node::Load($args[2]);
             $topic = Topic::load($args[1]);
 
-            if ($topic->acctype > 0 && $node->ispublic != 1) {
+            if ($topic->ispublic ==1 && $node->ispublic != 1) {
                 return "Нельзя добавлять публичный топик к приватному узлу";
             }
             $newtopic = new Topic();
@@ -174,7 +174,7 @@ class Main extends \App\Pages\Base
 
         $topic->title = $post->title;
         $topic->content = $post->data;
-        $topic->acctype = $post->acctype;
+        $topic->ispublic = $post->ispublic ?1:0;
 
         if (strlen($topic->title) == 0) {
             return 'Не введен заголовок';
@@ -182,7 +182,7 @@ class Main extends \App\Pages\Base
  
 
         $node = Node::load($args[1]);
-        if ($topic->acctype > 0 && $node->ispublic != 1) {
+        if ($topic->ispublic ==1 && $node->ispublic != 1) {
             return "Нельзя добавлять пуьбличный топик  к приватному узлу " ;
         }
 
@@ -337,7 +337,7 @@ class Main extends \App\Pages\Base
 
 
         $ret = array();
-        $ret['acctype'] = $t->acctype;
+        $ret['ispublic'] = $t->ispublic==1;
         $ret['content'] = $t->content;
         $ret['tags'] = $t->getTags();
         $ret['sugs'] = $t->getSuggestionTags();
@@ -358,7 +358,8 @@ class Main extends \App\Pages\Base
     }
  
     public function loadTopics($args, $post=null) {
-
+        $user = \App\System::getUser();
+  
         $conn = \ZCL\DB\DB::getConnect();
 
         $favorites = [];
@@ -380,11 +381,12 @@ class Main extends \App\Pages\Base
              "title"=>$t->title,
              "fav"=>in_array($t->topic_id, $favorites),
              "topic_id"=>$t->topic_id,
-             "acctype"=>$t->acctype,
-             'canedit' => true,
+             "ispublic"=>$t->ispublic==1,
+             'canedit' => $user->user_id==$t->user_id,
              'cancut' => true,
-             'canlink' => true,
+             'isowner' => $user->user_id==$t->user_id,
              'islink' =>$islink ,
+              
              "hash" =>md5($t->topic_id . \App\Helper::getSalt()),
              
              );

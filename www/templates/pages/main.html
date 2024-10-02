@@ -1,14 +1,8 @@
 <html>
-
-    <head>
-
-    </head>
-
+ 
     <body>
 
- 
-        
-        
+   
       
    {{={| |}=}}   
    <div class="row" id="vapp">
@@ -36,7 +30,7 @@
                         <a v-on:click.prevent="onCopyTopic"  v-show="selectedTopic != null && selectedTopic.islink!=true" title="Копировать для вставки как копию "  class="btn btn-sm btn-info  "><i class="fa fa-copy"></i></a>
                         <a v-on:click.prevent="onCopyLinkTopic" v-show="selectedTopic != null && selectedTopic.islink!=true " title="Копировать для вставки  как  ссылку"  class="btn btn-sm btn-info  "><i       class="fa fa-share"></i></a>
                         <a v-on:click.prevent="onPasteTopic" v-show="clipboard.topic != null " title="Вставить"  class="btn btn-sm btn-info  "><i class="fa fa-paste"></i></a>
-                        <a v-bind:href="extlink" v-show="selectedTopic != null && selectedNode.acctype==2 && selectedTopic.islink!=true" title="Внешняя ссылка"  target="_blank" class="btn btn-sm btn-info  "><i       class="fa      fa-link"></i></a>
+                        <a v-bind:href="extlink" v-show="selectedTopic != null && selectedTopic.ispublic && selectedTopic.isowner " title="Внешняя ссылка"  target="_blank" class="btn btn-sm btn-info  "><i       class="fa      fa-link"></i></a>
                         <a v-on:click.prevent="onDelTopic" v-show="selectedTopic != null" title="Удалить"  class="btn btn-sm btn-danger  "><i class="fa fa-trash"></i></a>
                     </div>           
            <table class="table table-sm table-hover">
@@ -44,7 +38,7 @@
                  <td   style="width:24px"    >
                   
                       <i v-show="t.islink==true"   class="mt-2 fa fa-share fa-xs"></i>
-                      <i v-show="t.acctype==0 && t.islink!=true"   class="mt-2 fa fa-lock fa-xs"></i>
+                      <i v-show="t.ispublic==false && t.islink!=true"   class="mt-2 fa fa-lock fa-xs"></i>
                    
                  </td>
    
@@ -158,7 +152,7 @@
                                 <input v-model="nameNode"  id="editnodetitle" required="required"   class="form-control" type="text">
                             </div>
                             <div class="form-check">
-                                <input v-model="publicNode"  id="editnodepublic" type="checkbox" class="form-check-input">
+                                <input v-model="publicTopic"  id="editnodepublic" type="checkbox" class="form-check-input">
                                 <label class="form-check-label" for="editnodepublic">Доступный всем</label>
                             </div>
                         </div>
@@ -215,17 +209,14 @@
                                 <label for="editcontent">Содержание </label>
                                 <div id="editcontent" class="form-control"  ></div>
                             </div>
-                            <div class="form-group ">
-                                <label for="editacctype">Тип доступа</label>
-                                <select v-model="editAccType" style="width:200px"  class="form-control">
-                                     <option value="0">Приватний</option>
-                                     <option value="1">Публичный</option>
-                                     <option value="2">Внешний доступ</option>
-                                </select>
-                            </div>
+                           
+                              <div class="form-check">
+                                <input v-model="publicTopic"  id="edittopicpublic" type="checkbox" class="form-check-input">
+                                <label class="form-check-label" for="edittopicpublic">Доступный всем</label>
+                            </div>                            
                               <div class="form-group">
-                                <label for="edittags">Теги</label>
-                                <div id="edittags" class="tag-list"></div>    
+                                 <label id="edittags_label" for="edittags">Теги</label>
+                                 <div id="edittags"  ></div>    
                             </div>
 
 
@@ -278,7 +269,7 @@
             editTags:"" ,
         
          
-            editAccType:0 ,
+            publicTopic:false ,
                  
             
         } } ,  
@@ -406,7 +397,7 @@
                    { 
                       data = JSON.parse(data)
                       this.topicData = data.content
-                      this.editAccType = data.acctype
+                      this.publicTopic = data.ispublic
                       this.topicTags = data.tags
                       this.topicSuggestions = data.sugs
                       this.topicFiles = data.files
@@ -417,7 +408,7 @@
             }   ,
          
             onNewTopic:function(){
-                  this.editAccType = 0;
+                  this.publicTopic = false;
                   this.newTopic = true;
                   this.editTitle = "";
              
@@ -427,14 +418,10 @@
                   $('#editcontent').summernote("code","")
          
                   
-             setTimeout(()=>{
-                inittags([],this.topicSuggestions) 
-             }, 1000);     
-                    
-                                     
+                                
             }   ,
             onEditTopic:function(){
-                //  this.editAccType = this.selectedTopic.acctype;
+
                   this.newTopic = false;
                   this.editTitle = this.selectedTopic.title;
                   this.topicData = this.selectedTopic.content;
@@ -443,9 +430,7 @@
                   $('#editcontent').summernote("code",this.topicData)
                 
 
-                 setTimeout(()=>{
-                    inittags(this.topicTags,this.topicSuggestions) 
-                 }, 1000);            
+                         
                       
             }   ,
          
@@ -456,7 +441,7 @@
                
                var d = {
                    "title": this.editTitle,
-                   "acctype": this.editAccType,
+                   "ispublic": this.publicTopic,
                    "tags": this.editTags,
                    "data":$('#editcontent').summernote("code") ,
                }
@@ -726,12 +711,14 @@
             });
 
             
-        function inittags(t,s ) {  
-               
+        function inittags(  ) {  
+               $('#edittags').remove();  
+               $('#edittags_label').append('<div id="edittags"></div>');  
+                
                var tags =   $('#edittags').tags({
-                        tagData:t,
-                        suggestions:s, 
-       
+                        tagData:vapp.topicTags,
+                        suggestions:vapp.topicSuggestions, 
+                   
                         afterAddingTag:function(tag){
                           var t = tags.getTags();
                           vapp.editTags = t.join(";") 
@@ -742,13 +729,11 @@
                           vapp.editTags = t.join(";") 
                          
                         }
-                        
-                         
                    });  
-                
-                
             }
-     
+        $('#topicedit').on('shown.bs.modal', function (event) {
+            inittags()
+        })   
             
         </script>
     </body>

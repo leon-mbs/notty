@@ -17,7 +17,7 @@ class Topic extends \ZCL\DB\Entity
  
      protected function init() {
         $this->topic_id = 0;
-        $this->acctype = 0;
+        $this->ispublic = 0;
         $this->updatedon=time()  ;
     }
 
@@ -54,7 +54,7 @@ class Topic extends \ZCL\DB\Entity
     public static function findByNode($node_id) {
         $user_id=\App\System::getUser()->user_id;
    
-        return self::find(" (acctype=0 or user_id={$user_id} ) and topic_id in (select topic_id from topicnode where node_id={$node_id})");
+        return self::find(" (ispublic=0 or user_id={$user_id} ) and topic_id in (select topic_id from topicnode where node_id={$node_id})");
     }
 
     /**
