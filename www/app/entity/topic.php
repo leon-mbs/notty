@@ -11,18 +11,50 @@ namespace App\Entity;
 class Topic extends \ZCL\DB\Entity
 {
 
-    protected function init() {
+     public const PRIVATE       = 0;   
+     public const PUBLIC        = 1;   
+     public const OUTER         = 2;   
+ 
+     protected function init() {
         $this->topic_id = 0;
         $this->ispublic = 0;
+        $this->updatedon=time()  ;
     }
 
+
+    protected function beforeSave() {
+        parent::beforeSave();
+
+        $this->detail = "<detail>";
+        $this->detail .= "<updatedon>{$this->updatedon}</updatedon>";
+        $this->detail .= "</detail>";
+
+        return true;
+    }
+
+    protected function afterLoad() {
+        //для совместимости
+        if(strpos($this->content,'<detail><![CDATA[')!==false) {
+          $xml = @simplexml_load_string($this->content);
+          $this->content = (string)($xml->detail[0]);
+            
+        }
+        
+        $xml = @simplexml_load_string($this->detail);
+        $this->updatedon = (int)($xml->updatedon[0]);
+
+        parent::afterLoad();
+    }    
+    
     /**
      * список топиков  для  узла
      * 
      * @param mixed $node_id
      */
     public static function findByNode($node_id) {
-        return self::find("topic_id in (select topic_id from topicnode where node_id={$node_id})");
+        $user_id=\App\System::getUser()->user_id;
+   
+        return self::find(" (ispublic=1 or user_id={$user_id} ) and topic_id in (select topic_id from topicnode where node_id={$node_id})");
     }
 
     /**
@@ -45,9 +77,10 @@ class Topic extends \ZCL\DB\Entity
      * 
      * @param mixed $node_id
      */
-    public function addToNode($node_id) {
+    public function addToNode($node_id,$islink=false) {
         $conn = \ZCL\DB\DB::getConnect();
-        $conn->Execute("insert into topicnode(topic_id,node_id)values({$this->topic_id},{$node_id})");
+        $conn->Execute("delete from topicnode where topic_id={$this->topic_id} and node_id = {$node_id} ");
+        $conn->Execute("insert into topicnode(topic_id,node_id,islink)values({$this->topic_id},{$node_id}," . ($islink ? 1:0  ). ")");
     }
 
     /**
@@ -82,6 +115,9 @@ class Topic extends \ZCL\DB\Entity
         $conn->Execute("delete from tags where topic_id=" . $this->topic_id);
 
         foreach ($tags as $tag) {
+            $tag = trim($tag);
+            if(strlen($tag)==0) continue;
+            
             $conn->Execute("insert tags (topic_id,tagvalue) values (" . $this->topic_id . "," . $conn->qstr($tag) . ")");
         }
     }
@@ -95,7 +131,7 @@ class Topic extends \ZCL\DB\Entity
         $conn = \ZCL\DB\DB::getConnect();
         $rc = $conn->GetCol("select distinct tagvalue from tags where topic_id=" . $this->topic_id);
         foreach($rc as $k=>$v){
-           if(strlen($v))$tl[$k] = $v;
+           if(strlen($v)>0)$tl[$k] = $v;
         }
         return $tl;
     }
@@ -109,4 +145,8 @@ class Topic extends \ZCL\DB\Entity
         return $conn->GetCol("select distinct tagvalue from tags where topic_id <> " . $this->topic_id);
     }
 
+   
+    
+    
+    
 }

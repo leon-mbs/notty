@@ -21,7 +21,7 @@ class Session
     }
 
     public function __get($name) {
-        return @$this->values[$name];
+        return $this->values[$name] ??'';
     }
 
     /**
@@ -34,5 +34,10 @@ class Session
         }
         return $_SESSION['App_session'];
     }
-
+ 
+    public function clean() {
+        $this->values = array();
+        $this->filter = array();
+     
+    }
 }

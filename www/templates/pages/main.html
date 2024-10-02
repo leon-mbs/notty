@@ -1,0 +1,742 @@
+<html>
+ 
+    <body>
+
+   
+      
+   {{={| |}=}}   
+   <div class="row" id="vapp">
+     <div class="  col-12" >
+     <div class="row">
+     <div class="col-12 col-md-6 col-xl-4 ">
+               <div class=" mb-1" style="height:30px;">
+                   <a v-on:click.prevent="onNewNode"    v-show="selectedNode != null"  class="btn btn-primary btn-sm  " title="Новый узел"             > +</a>
+                   <a v-on:click.prevent="onEditNode"   v-show="selectedNode != null && selectedNode.isowner" title="Редактироваать" class="btn btn-info btn-sm  " ><i  class="fa fa-edit"></i></a>
+                   <a v-on:click.prevent="onCutNode"    v-show="selectedNode != null && selectedNode.isowner" title="Вырезать" class="btn btn-info btn-sm  "><i class="fa fa-cut"></i></a>
+                   <a v-on:click.prevent="onPasteNode"  v-show="selectedNode != null && cpn != null" title="Вставить" class="btn btn-info btn-sm  "><i class="fa fa-paste"></i></a>
+                   <a v-on:click.prevent="onDeleteNode" v-show="selectedNode != null && selectedNode.isowner" title="Удалить" class="btn btn-danger btn-sm  "><i class="fa fa-trash"></i></a>
+
+                </div>
+                <div id="tree"  ></div>
+               
+
+    </div>        
+ 
+       <div class=" col-xl-4 col-md-6 col-12" v-show="selectedNode != null">
+            <div class=" mb-1"  >
+                        <a v-on:click.prevent="onNewTopic()" class="btn btn-primary btn-sm   " title="Новый топик"  ><i  class="fa fa-plus"></i></a> 
+                        <a v-on:click.prevent="onEditTopic()" v-show="selectedTopic != null && selectedTopic.canedit==true" title="Редактироваать"  class="btn btn-sm btn-info  "><i class="fa fa-edit"></i></a>
+                        <a v-on:click.prevent="onCutTopic"   v-show="selectedTopic != null && selectedTopic.isowner==true" title="Вырезать"  class="btn btn-sm btn-info   "><i class="fa fa-cut"></i></a>
+                        <a v-on:click.prevent="onCopyTopic"  v-show="selectedTopic != null && selectedTopic.islink!=true" title="Копировать для вставки как копию "  class="btn btn-sm btn-info  "><i class="fa fa-copy"></i></a>
+                        <a v-on:click.prevent="onCopyLinkTopic" v-show="selectedTopic != null && selectedTopic.islink!=true " title="Копировать для вставки  как  ссылку"  class="btn btn-sm btn-info  "><i       class="fa fa-share"></i></a>
+                        <a v-on:click.prevent="onPasteTopic" v-show="clipboard.topic != null " title="Вставить"  class="btn btn-sm btn-info  "><i class="fa fa-paste"></i></a>
+                        <a v-bind:href="extlink" v-show="selectedTopic != null && selectedTopic.ispublic && selectedTopic.isowner " title="Внешняя ссылка"  target="_blank" class="btn btn-sm btn-info  "><i       class="fa      fa-link"></i></a>
+                        <a v-on:click.prevent="onDelTopic" v-show="selectedTopic != null" title="Удалить"  class="btn btn-sm btn-danger  "><i class="fa fa-trash"></i></a>
+                    </div>           
+           <table class="table table-sm table-hover">
+           <tr v-for="t in topics"    v-bind:class="{'bg-success':issel(t.topic_id)}" >
+                 <td   style="width:24px"    >
+                  
+                      <i v-show="t.islink==true"   class="mt-2 fa fa-share fa-xs"></i>
+                      <i v-show="t.ispublic==false && t.islink!=true"   class="mt-2 fa fa-lock fa-xs"></i>
+                   
+                 </td>
+   
+               <td     > <a v-on:click.prevent="onTopic(t)">  {{t.title}}</a> </td>
+                
+               
+               <td   class="text-right  "><a v-on:click.prevent="onFav(t)">
+               
+                   <i v-show="t.fav==true && t.islink != true"   class="mt-2 fas fa-star fa-xs"></i>
+                   <i v-show="t.fav==false && t.islink != true"  class="mt-2 far fa-star fa-xs"></i>
+                    </a>
+                 </td>
+           </tr>
+           </table>
+      </div>        
+       <div class=" col-xl-4 col-md-8 col-12" v-show="selectedTopic != null  && selectedNode != null">
+            <div   class="row">
+                <div class="col-12">
+                  <div v-html="topicData"></div>     
+                                              
+               </div>
+               <div class="col-12">
+
+                    <table class="table table-sm">
+                        <tr>
+                            <td style="width:20px;"><i title="Теги" class="fa fa-tags"  style="font-weight: bolder;font-size:16px;"></i>
+                            </td>
+                            <td><a style="cursor:pointer" v-on:click.prevent="onTag(tag)" v-for="tag in topicTags" class="mr-2"  >{{tag}}</a></td>
+
+                            <td style="width:20px;">
+                                <i title="Прикрепленные файлы" class="fa   fa-paperclip"      style="font-weight:   bolder;font-size:16px;"></i>
+                            </td>
+                            <td>
+                                <div v-for="f in topicFiles"  style="display:inline;;margin:2px;">
+                                    <a v-bind:href="f.link"  target="_blank" >{{f.filename}}</a>
+                                    <a v-on:click.prevent="onDelFile(f.file_id)" ><i style="color:red;font-size: smaller;"   class="fa  fa-times-circle  "></i> </a>
+                                </div>
+                                <a  v-show="selectedTopic != null && selectedTopic.canedit==true && selectedTopic.islink!=true"  v-on:click.prevent="onAddFile" class="btn btn-info btn-sm ml-2" title="Добавить файл"  ><i class="fa fa-upload "></i></a>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+
+
+            </div>                
+            
+      </div>        
+   
+  </div>        
+     <div class="row">
+        
+
+            <div class="col-12 col-xl-10">
+                 <hr>
+                    <div class="navbar nav">
+                        <form class="row"  >
+
+                            <div class="col-auto">
+                           
+                                <input placeholder="Поиск"  v-model="searchText"   class="form-control mr-2" >
+                            </div>
+                          <div class="col-auto">
+                                      
+                                <div class="form-check">
+                                    <input  v-model="searchTitle"  type="checkbox" class="form-check-input">
+                                    <label class="form-check-label mr-2" for="planned">только в заголовках</label>
+                                </div>
+                         </div>
+                          <div class="col-auto">
+                      <select v-model="searchType"  class="form-control mr-2">
+                                    <option value="1">Фраза</option>
+                                    <option value="2">Комбинация слов</option>
+                                </select>
+                              </div>
+                          <div class="col-auto">
+                 
+                                <button v-on:click.prevent="onSearch"  type="button" class="btn btn-primary   mr-2"><i                                        class="fa fa-search"></i></button>                     
+                                <a  v-on:click.prevent="onSearchFav" title="Избранные" ><i class="fa fa-star" style="font-weight:bolder;cursor:pointer;color:brown"></i></a>
+                            </div>
+                           
+                        </form>
+                    </div>
+              
+                <table class="table table-sm">
+                    <tr style="cursor:pointer" v-on:click="onSearchTopic(t)" v-for="t in searchResult">
+                        <td > {{t.title}}                         </td>
+                        <td > {{t.nodes}}                       </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+   
+
+                        
+   </div>
+   
+
+   <div id="nodeedit" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog"  >
+                <div class="modal-content">
+                    <form  >
+
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="editnodetitle">Название  узла</label>
+                                <input v-model="nameNode"  id="editnodetitle" required="required"   class="form-control" type="text">
+                            </div>
+                            <div class="form-check">
+                                <input v-model="publicNode"  id="editnodepublic" type="checkbox" class="form-check-input">
+                                <label class="form-check-label" for="editnodepublic">Доступный всем</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button v-on:click.prevent="onSaveNode"  type="button" class="btn  btn-primary">OK </button>
+                        </div>
+                    </form>
+                </div>
+            
+            </div>
+            
+        </div>
+    <div id="fileedit" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form id="fileform"  enctype="multipart/form-data">
+
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="editfile">Файл (до 10 МБ)</label>
+                                <input id="editfile" name="editfile"  required="required" type="file"  class="form-control        ">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                                                </button>
+                            <button v-on:click.prevent="onSaveFile()" type="button" class="btn btn-primary">OK                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+            </div>
+            
+        </div>
+         
+   <div id="topicedit" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg"  >
+                <div class="modal-content">
+                    <form  >
+
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                       <div class="form-group">
+                                <label for="edittitle">Заголовок</label>
+                                <input required="required" id="edittitle" v-model="editTitle" type="text"  class="form-control"  >
+                            </div>
+                            <div class="form-group">
+                                <label for="editcontent">Содержание </label>
+                                <div id="editcontent" class="form-control"  ></div>
+                            </div>
+                           
+                              <div class="form-check">
+                                <input v-model="publicTopic"  id="edittopicpublic" type="checkbox" class="form-check-input">
+                                <label class="form-check-label" for="edittopicpublic">Доступный всем</label>
+                            </div>                            
+                              <div class="form-group">
+                                 <label id="edittags_label" for="edittags">Теги</label>
+                                 <div id="edittags"  ></div>    
+                            </div>
+
+
+                        </div>
+                        <div class="modal-footer">
+                            
+                            <button v-on:click.prevent="onSaveTopic()"  type="button" class="btn  btn-primary">OK </button>
+                        </div>
+                    </form> 
+                </div>
+            
+            </div>
+            
+                             
+</div>   
+   
+</div>
+
+
+   
+   {|={{ }}=|}     
+   
+   
+        <script>
+        
+        
+  var vapp = new Vue({
+        el: '#vapp',
+        data() { return {
+            selectedNode:null ,
+            selectedTopic:null ,
+            nameNode:'' ,
+            newNode:false ,
+            publicNode:false ,
+            clipboard:{topic:null,node:null,op:""} ,
+            cpn:null,
+            searchResult:[] ,
+            topics:[] ,
+            topicData:"" ,
+            topicTags:[] ,
+            topicSuggestions:[] ,
+            topicFiles:[] ,
+            searchType:1 ,
+            searchText:"" ,
+            searchTitle:false ,
+            selectedSearchId:0 ,
+
+            newTopic:false ,
+            editTitle:"" ,
+            editTags:"" ,
+        
+         
+            publicTopic:false ,
+                 
+            
+        } } ,  
+        computed:{
+            extlink: function(){
+                if(this.selectedTopic == null) return "";
+                return "/topic/"+ this.selectedTopic.topic_id + "/"+this.selectedTopic.hash
+            }
+        },              
+        methods: {             
+            issel:function(id){
+                  return this.selectedTopic != null && this.selectedTopic.topic_id == id
+            }   ,
+            onFav:function(t){
+               t.fav = !t.fav
+                  
+               callPageMethod('onFav',[t.topic_id,t.fav], null,(data)=> 
+               { 
+                      //   this.updateTopics(this.selectedNode.id)
+    
+               })          
+                  
+                            
+                  
+            }   ,
+            onSearchTopic:function(t){
+               var v = this
+               
+               var allNodes=  $('#tree').treeview('getEnabled'); 
+               $(allNodes).each(function(index, element) { 
+                           if(element.id==t.node_id) {
+                             $('#tree').treeview('selectNode', [ element, { silent: true } ]);
+                             $('#tree').treeview('revealNode', [ element, { silent: true } ]);
+                             v.selectedNode = element
+                             v.selectedSearchId = t.topic_id
+                             v.updateTopics(v.selectedNode.id)
+                             //v.onTopic(t.topic_id)
+
+                             
+                           }; 
+               })          
+            },
+            onSearch:function(t){
+               var criteria={
+                   "type":this.searchType,
+                   "text":this.searchText,
+                   "title":this.searchTitle,
+                   
+               } 
+               callPageMethod('onSearch',[], JSON.stringify(criteria),(data)=> 
+               { 
+                     this.searchResult = JSON.parse(data) 
+    
+               })          
+                
+            }   ,
+            onSearchFav:function(t){
+               var criteria={
+                   "fav":true
+               } 
+               callPageMethod('onSearch',[], JSON.stringify(criteria),(data)=> 
+               { 
+                     this.searchResult = JSON.parse(data) 
+    
+               })          
+                
+            }   ,
+            
+            onTag:function(tag){
+
+                          
+               var criteria={
+                   "tag":tag
+               } 
+               callPageMethod('onSearch',[], JSON.stringify(criteria),(data)=> 
+               { 
+                     this.searchResult = JSON.parse(data) 
+    
+               })           
+                  
+                            
+                  
+            }   ,
+            onDelFile:function(id){
+
+                          
+               callPageMethod('onDelFile',[id], null,(data)=> 
+               { 
+                     
+                  this.onTopic(this.selectedTopic)
+               })           
+                  
+                            
+                  
+            }   ,
+                 
+            
+            onAddFile:function(t){    
+                
+               $("#fileedit").modal('show') 
+                
+            },
+            onSaveFile:function(t){    
+                
+               if(editfile.reportValidity()==false) return
+                
+               var el = document.getElementById('fileform') ;
+               var f = new  FormData(el)  
+               
+                  callPageMethod('onAddFile',[this.selectedTopic.topic_id], f,(data)=> 
+                  {     
+                      this.onTopic(this.selectedTopic)  
+                  });               
+                  el.reset();
+                  $("#fileedit").modal('hide') 
+                     
+                
+            },
+                
+            onTopic:function(t){    //загрузка топика по  выбору в  списке
+                
+                   this.selectedTopic = t
+               
+                   callPageMethod('loadTopic',[t.topic_id], null,(data)=> 
+                   { 
+                      data = JSON.parse(data)
+                      this.topicData = data.content
+                      this.publicTopic = data.ispublic
+                      this.topicTags = data.tags
+                      this.topicSuggestions = data.sugs
+                      this.topicFiles = data.files
+                     
+                   })          
+                      
+                  
+            }   ,
+         
+            onNewTopic:function(){
+                  this.publicTopic = false;
+                  this.newTopic = true;
+                  this.editTitle = "";
+             
+            
+ 
+                  $('#topicedit').modal('show');
+                  $('#editcontent').summernote("code","")
+         
+                  
+                                
+            }   ,
+            onEditTopic:function(){
+
+                  this.newTopic = false;
+                  this.editTitle = this.selectedTopic.title;
+                  this.topicData = this.selectedTopic.content;
+
+                  $('#topicedit').modal('show');
+                  $('#editcontent').summernote("code",this.topicData)
+                
+
+                         
+                      
+            }   ,
+         
+            onSaveTopic:function(){
+                    
+               if(edittitle.reportValidity() ==false) return;
+
+               
+               var d = {
+                   "title": this.editTitle,
+                   "ispublic": this.publicTopic,
+                   "tags": this.editTags,
+                   "data":$('#editcontent').summernote("code") ,
+               }
+               
+          
+         
+                              
+               callPageMethod('saveTopic',[this.newTopic ? 0 : this.selectedTopic.topic_id, this.selectedNode.id], JSON.stringify(d) ,(data)=> 
+               {  
+               
+                    if(data != ""){
+                        toastr.error(data)
+                  
+                        return;
+                    }
+               
+//                   this.selectedSearchId = ret.id                   
+                   this.selectedTopic = null
+                   this.updateTopics(this.selectedNode.id)            
+         
+                   $('#topicedit').modal('hide');
+          
+               }  )
+                    
+        
+                 
+              
+            }   ,       
+            onNewNode:function(){
+                  this.publicNode = false;
+                  this.newNode = true;
+                  this.nameNode = "";
+                  $('#nodeedit').modal('show');  
+            }   ,
+            
+  
+            onEditNode:function(){
+                  this.publicNode = this.selectedNode.ispublic==1;
+                  this.newNode = false;
+                  this.nameNode = this.selectedNode.text;
+                  $('#nodeedit').modal('show');
+            
+            }   ,               
+            
+            onSaveNode:function(){
+             
+                 if(editnodetitle.reportValidity() ){
+
+                    if(this.newNode) {
+                       this.opTree(["new",this.nameNode,this.publicNode,this.selectedNode.id])       
+                    } else {
+                       this.opTree(["edit",this.nameNode,this.publicNode,this.selectedNode.id])                           
+                    }
+                    
+                 }
+              
+            }   ,
+
+            onCutTopic:function(){
+       
+               this.clipboard={}
+               this.clipboard.topic = this.selectedTopic;
+               
+               this.clipboard.op = "cut";
+                         
+            }   ,
+            onCopyTopic:function(){
+               this.clipboard={}
+               this.clipboard.topic = this.selectedTopic;
+               
+               this.clipboard.op = "copy";
+           }   ,
+            onCopyLinkTopic:function(){
+               this.clipboard={}
+               this.clipboard.topic = this.selectedTopic;
+               
+               this.clipboard.op = "link";
+ 
+            }   ,
+            onPasteTopic:function(){
+             
+               if(this.clipboard.op=="copy")  {
+                  this.opTopic(["pastecopy",this.clipboard.topic.topic_id,this.selectedNode.id,this.clipboard.topic.islink])                               
+               }
+               if(this.clipboard.op=="link")  {
+                  this.opTopic(["pastelink",this.clipboard.topic.topic_id,this.selectedNode.id,this.clipboard.topic.islink])                               
+               }
+               if(this.clipboard.op=="cut")  {
+                  this.opTopic(["move",     this.clipboard.topic.topic_id,this.selectedNode.id,this.clipboard.topic.islink])                               
+                  this.clipboard={topic:null,node:null,op:""}
+
+               }
+             
+              
+            }   ,  
+            onDelTopic:function(){
+               if(confirm(  this.selectedTopic.islink==true ? "Удалить ссылку?" : "Удалить топик?") == false){
+                   return;                                   
+               }
+               this.opTopic(["delete",this.selectedTopic.topic_id,this.selectedNode.id,this.selectedTopic.islink])                           
+           
+               this.selectedTopic = null
+               
+
+            }   ,
+            
+            opTopic:function(args){
+               
+               callPageMethod('opTopic',args, null,(data)=> 
+               {   
+                    if(data != ""){
+                        toastr.error(data)
+                  
+                        return;
+                    }
+
+                   this.clipboard={topic:null,node:null,op:""}
+                   this.selectedTopic = null
+
+                   this.updateTopics(this.selectedNode.id)
+                   
+               });
+               
+                
+            }   ,
+              
+            
+            onCutNode:function(){
+               this.cpn = this.selectedNode 
+            }   ,
+            onPasteNode:function(){
+               this.opTree(["paste",this.cpn.id,this.selectedNode.id])       
+               this.cpn = null
+            }   ,
+            onDeleteNode:function(){
+                 if(confirm("Удалить узел")){
+                     this.opTree(["delete",this.selectedNode.id])                           
+    
+                 }         
+            }   ,
+            
+            opTree:function(args){
+               
+               callPageMethod('opTree',args, null,(data)=> 
+               {   
+                    if(data != ""){
+                        toastr.error(data)
+                  
+                        return;
+                    }
+                    $('#nodeedit').modal('hide');
+                    this.selectedNode=null
+                    this.selectedTopic=null
+                    var  ex = [];
+                      
+                    for (let n of $('#tree').treeview('getExpanded') ) {
+                        ex.push(n.id) ;
+                    } 
+                       
+                     
+                    updateTree(ex.join() );
+                   
+               });
+               
+                
+            }   ,
+             updateTopics:function( nodeid){
+                
+                   callPageMethod('loadTopics',[nodeid], null,(data)=> 
+                   {   
+                          
+                         this.topics = JSON.parse(data)
+                         
+
+                         
+                         if(this.selectedSearchId >0) {
+                            for(let tt of this.topics )  {
+                                if(tt.topic_id == this.selectedSearchId) {
+                                    this.onTopic(tt);
+                                    this.selectedSearchId = 0
+                                }
+                            }
+                         }
+                         
+                         
+                         
+                   })
+     
+            }   ,
+            
+        },    
+        watch:{
+            selectedNode(newVal, oldVal) { 
+                if(newVal == null) {
+                   selectedTopic=null;   
+                   return;
+                }
+               
+                this.updateTopics(newVal.id)
+               
+               
+               
+            } 
+        } ,
+        mounted: function(){
+            $('#tree').treeview({   
+                       data: []  
+                 })       
+
+            updateTree();
+            
+            
+            
+            
+        } 
+     })        
+        
+        
+ 
+ 
+ function updateTree(expanded=""){
+           callPageMethod('getTree',[expanded], null,(data)=> 
+           {   
+                 var treedata  = JSON.parse(data)
+                                        
+                 $('#tree').treeview('remove');
+                 $('#tree').treeview({
+                                  data: treedata,  
+                                  expandIcon:'fa fa-plus  fa-xs',
+                                  collapseIcon:'fa fa-minus  fa-xs',
+                                 // levels:2    ,
+                                  emptyIcon:'fa '
+                                 
+                                 
+                 })      
+                 $('#tree').on('nodeSelected', function(event, data) {
+                    vapp.selectedNode = data
+
+                 });     
+                 $('#tree').on('nodeUnselected ', function(event, data) {
+                    vapp.selectedNode = null
+                    vapp.selectedTopic = null
+                 });     
+                    
+                   
+           });   
+           
+           
+ }
+ 
+     
+        
+
+        $('#editcontent').summernote({
+                height: 400,
+                lang: 'uk-UA',
+
+                callbacks: {
+          
+                    onPaste: function (e) {
+
+                        var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+                        e.preventDefault();
+                        document.execCommand('insertText', false, bufferText.replace(/\n/g, ''));
+                    }
+                }
+            });
+
+            
+        function inittags(  ) {  
+               $('#edittags').remove();  
+               $('#edittags_label').append('<div id="edittags"></div>');  
+                
+               var tags =   $('#edittags').tags({
+                        tagData:vapp.topicTags,
+                        suggestions:vapp.topicSuggestions, 
+                   
+                        afterAddingTag:function(tag){
+                          var t = tags.getTags();
+                          vapp.editTags = t.join(";") 
+                       
+                        },
+                        afterDeletingTag:function(tag){
+                          var t = tags.getTags();
+                          vapp.editTags = t.join(";") 
+                         
+                        }
+                   });  
+            }
+        $('#topicedit').on('shown.bs.modal', function (event) {
+            inittags()
+        })   
+            
+        </script>
+    </body>
+      
+    
+    </html>

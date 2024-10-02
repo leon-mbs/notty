@@ -1,0 +1,88 @@
+<html>
+
+<body>
+
+
+    <div class="row" zippy="plist">
+        <div class="col-10 col-md-4  col-xl-3">
+            <h5>Пользователи</h5>
+             
+            <a zippy="adduser">Добаавить</a>
+            <table class="table    table-sm ">
+
+          
+                <tr zippy="userrow">
+
+                    <td zippy="userlogin">     </td>
+                    <td zippy="username">     </td>
+
+                    <td>
+                    <a zippy="edit"> <i class="fa fa-edit"  /> </a>
+                    &nbsp;&nbsp;<a zippy="del"> <i class="fa fa-trash"  /> </a>
+                    </td>
+                    
+
+                </tr>
+
+            </table>
+      
+
+
+
+        </div>
+    </div>
+
+    <div class="row" zippy="pedit">
+        <div class="col-10 col-md-4  col-xl-3">
+            <h5>Редактирование пользователя</h5>
+                    <form zippy="editform" role="form">
+                    <div class="form-group">
+                        <label for="editlogin">Логин</label>
+                        <input pattern="[_a-zA-Z0-9]+"   class="form-control" zippy="editlogin"
+                               required="required">
+                        <small>Допускаются латиские буквы, цифры и подчеркивание</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="editname">Имя</label>
+                        <input   class="form-control" zippy="editname">
+                        <small  ><td>сли не  хадано используется  логин</td> </small>
+                    </div>
+                  
+                    <div class="form-group">
+                        <label for="editpass">Пароль</label>
+                        <input type="password"  class="form-control" zippy="editpass">
+                        <small  >Если пароль не  меняется   существующего  пользолвателя, оставте пустым</small>
+                    </div>
+                     <div class="form-group">
+                        <label for="editconfirm">Подтверждение</label>
+                        <input type="password"  class="form-control" zippy="editconfirm">
+                        
+                    </div>
+                   <div class="form-group">
+                        <div class="form-check   ">
+                            <input class="form-check-input" type="checkbox" zippy="editdisabled">
+                            <label class="form-check-label mr-sm-2 text-danger" for="editdisabled"> Не активный</label>
+                        </div>
+                    </div>
+            
+                    
+                    <div class="form-group">
+                        <a zippy="cancel" class="btn btn-secondary  mr-4  ">Отменить</a>
+                        <button type="submit" class="btn btn-primary   ">Сохранить</button>
+                        
+                    </div>
+                </form>
+
+        </div>
+    </div>
+        <script>
+            function check_del() {
+
+                return confirm("Удалить  пользователя?")
+
+            }
+
+        </script>
+</body>
+
+</html>

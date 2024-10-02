@@ -10,7 +10,8 @@ use \App\Entity\User;
  */
 class System
 {
-
+    public const CURR_VERSION = "2.0.0";
+  
     /**
      * Возвращает  текущего  юзера
      * @return  User
@@ -42,38 +43,7 @@ class System
 
         return Session::getSession();
     }
-
-    /**
-     * Возвращает набор  параметром  по  имени набора
-
-     */
-    public static function getOptions() {
-
-
-        $conn = \ZCL\DB\DB::getConnect();
-        $options = array();
-        $rs = $conn->Execute("select optname,optvalue from  options  ");
-        foreach ($rs as $row) {
-            $options[$row['optname']] = $row['optvalue'];
-        }
-
-        return $options;
-    }
-
-    /**
-     * Записывает набор  параметров  по имени набора
-     *
-     * @param mixed $group
-     * @param mixed $options
-     */
-    public static function setOptions($options) {
-
-        $conn = \ZCL\DB\DB::getConnect();
-        foreach ($options as $key => $value) {
-            $conn->Execute(" delete from  options where  optname='{$key}' ");
-            $conn->Execute(" insert into options (optname,optvalue) values ( '{$key}', '{$value}') ");
-        }
-    }
+ 
 
     /**
      * Проверка  залогинени  ли  пользователь
@@ -94,23 +64,27 @@ class System
     }
 
     
-    public static function setSuccesMsg($msg) {
-        Session::getSession()->smsg = $msg;
+    public static function setSuccessMsg($msg) {
+      $msg = str_replace("'", "`", $msg) ;
+      Session::getSession()->smsg = $msg;
     }
 
     public static function getSuccesMsg() {
         return Session::getSession()->smsg;
     }
 
-    public static function setErrorMsg($msg) {
+
+    public static function setErrorMsg($msg ) {
+        $msg = str_replace("'", "`", $msg) ;
         Session::getSession()->emsg = $msg;
     }
 
     public static function getErrorMsg() {
         return Session::getSession()->emsg;
     }
-
+  
     public static function setWarnMsg($msg) {
+        $msg = str_replace("'", "`", $msg) ;
         Session::getSession()->wmsg = $msg;
     }
 
@@ -119,7 +93,8 @@ class System
     }
 
     public static function setInfoMsg($msg) {
-        Session::getSession()->imsg = $msg;
+       $msg = str_replace("'", "`", $msg) ;
+       Session::getSession()->imsg = $msg;
     }
 
     public static function getInfoMsg() {

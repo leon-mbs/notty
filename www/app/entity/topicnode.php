@@ -22,7 +22,8 @@ class TopicNode extends \ZCL\DB\Entity
      */
     public static function searchByText($text, $type, $title) {
         global $logger;
-
+        $user_id=\App\System::getUser()->user_id;
+   
         $arr = array();
         $text = trim($text);
 
@@ -36,22 +37,21 @@ class TopicNode extends \ZCL\DB\Entity
         }
 
 
-        $sql = "  select * from topicnodeview   where (1=1   ";
+        $where =  "  (ispublict=1 or tuser_id={$user_id} ) ";
 
         foreach ($arr as $t) {
 
 
             if ($title == false) {
-                $sql .= "and ( title like {$t}  or content like {$t} )";
+                $where .= "and ( title like {$t}  or content like {$t} )";
             } else {
-                $sql .= " and  title like {$t} ";
+                $where .= " and  title like {$t} ";
             }
         }
-        $sql .= ") and  user_id=" . \App\System::getUser()->user_id;
 
-        // $logger->info($sql);
+ 
 
-        $list = TopicNode::findBySql($sql);
+        $list = TopicNode::find($where);
 
         return $list;
     }
@@ -62,10 +62,11 @@ class TopicNode extends \ZCL\DB\Entity
      * @param mixed $tag
      */
     public static function searchByTag($tag) {
+        $user_id=\App\System::getUser()->user_id;
+   
+        $where = "   (ispublict=1 or tuser_id={$user_id} ) and  topic_id in (select topic_id from tags where tagvalue  = " . Topic::qstr($tag) . " )  " ;
 
-        $sql = "  select * from topicnodeview   where topic_id in (select topic_id from tags where tagvalue  = " . Topic::qstr($tag) . " ) and  user_id=" . \App\System::getUser()->user_id;
-
-        $list = TopicNode::findBySql($sql);
+        $list = TopicNode::find($where);
 
         return $list;
     }
@@ -73,25 +74,15 @@ class TopicNode extends \ZCL\DB\Entity
     // поиск избранных 
     public static function searchFav() {
 
-        $sql = "  select * from topicnodeview   where topic_id in (select topic_id from topics where favorites  = 1  ) and  user_id=" . \App\System::getUser()->user_id;
+        $user_id=\App\System::getUser()->user_id;
+        
+        $where = "    topic_id in (select topic_id from fav where   user_id= {$user_id} )";
 
-        $list = TopicNode::findBySql($sql);
+        $list = TopicNode::find($where);
 
         return $list;
     }
 
-    /**
-     * цепочка  названий ущлов до  корня
-     * 
-     */
-    public function nodes() {
 
-        $node = Node::load($this->node_id);
-        $list = $node->getParents();
-        $list = array_reverse($list);
-
-        $path = implode(" > ", $list);
-        return $path;
-    }
 
 }

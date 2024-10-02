@@ -20,7 +20,7 @@ class Application extends \Zippy\WebApplication
         $path = '';
         $name = ltrim($name, '\\');
         $arr = explode('\\', $name);
-        $templatepath = _ROOT . 'templates/app/';
+        $templatepath = _ROOT . 'templates/';
 
 
         //    $path = \App\getTemplate($templatepath . $lang . '/', $name, $layout);

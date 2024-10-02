@@ -35,7 +35,7 @@ class Account extends Base
         $this->profileform->add(new TextInput('password'));
         $this->profileform->add(new TextInput('confirm'));
 
-        // $this->_tvars['notadmin'] = $this->_user->username != 'admin';
+
     }
 
     public function profileformOnSubmit($sender) {
@@ -44,43 +44,31 @@ class Account extends Base
         $confirm = $this->profileform->confirm->getText();
         $password = $this->profileform->password->getText();
 
-        $username = $this->profileform->username->getText();
+        $this->_user->username = $this->profileform->username->getText();
 
-        if ($username == '') {
-            $this->setError('Введите имя');
-        }
-
+      
 
         if ($password != '') {
 
 
             if ($confirm == '') {
                 $this->setError('Неверное подтверждение');
+                return;
             } else
             if ($confirm != $password) {
                 $this->setError('Неверное подтверждение');
+                return;
             }
+            $this->_user->userpass = (\password_hash($password, PASSWORD_DEFAULT));
+               
         }
+ 
 
-
-
-
-
-        if (!$this->isError()) {
-
-
-            $this->_user->username = $username;
-
-
-            if ($password != '') {
-                $this->_user->userpass = (\password_hash($password, PASSWORD_DEFAULT));
-            }
-            $this->_user->hashdata = "";
-
-            $this->_user->save();
-            System::setUser($this->_user);
-            $this->setSuccess('Изменения сохранены');
-        }
+        $this->_user->save();
+        System::setUser($this->_user);
+     
+        $this->setSuccess('Изменения сохранены');
+  
         $this->profileform->password->setText('');
         $this->profileform->confirm->setText('');
     }

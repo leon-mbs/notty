@@ -1,11 +1,11 @@
 {
     "require": {
 
-        "php": ">=5.4",
-        "leon-mbs/zippy": "2.5.11",
-        "monolog/monolog": "1.6.0",
-        "roave/security-advisories": "dev-master",
-        "ircmaxell/password-compat": "v1.0.4" 
+        "php": "^8.0.0",
+        "leon-mbs/zippy": "~2.7.2",
+        "monolog/monolog": "2.9.3",
+        "roave/security-advisories": "dev-master"
+
     }
 
 }

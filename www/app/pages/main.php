@@ -2,593 +2,410 @@
 
 namespace App\Pages;
 
-use \Zippy\Html\DataList\DataView;
-use \Zippy\Html\Panel;
-use \Zippy\Html\Label;
-use \Zippy\Html\Image;
-use \Zippy\Html\Form\Form;
-use \Zippy\Html\Form\Button;
-use \Zippy\Html\Form\TextInput;
-use \Zippy\Html\Form\TextArea;
-use \Zippy\Html\Form\CheckBox;
-use \Zippy\Html\Form\DropDownChoice;
-use \Zippy\Html\Form\SubmitButton;
-use \Zippy\Html\Link\RedirectLink;
-use \Zippy\Html\Link\ClickLink;
-use \Zippy\Html\Link\BookmarkableLink;
-use \Zippy\Html\Link\SubmitLink;
-use \ZCL\DB\EntityDataSource;
-use \App\Application as App;
-use \App\System;
-use \App\Helper;
-use \App\Filter;
-use \ZCL\BT\Tags;
-use \ZCL\BT\Tree;
-use \ZCL\BT\TreeNode;
-use \App\Entity\Node;
-use \App\Entity\Topic;
-use \App\Entity\TopicNode;
+use App\Application as App;
+use App\Entity\Node;
+use App\Entity\Topic;
+use App\Entity\TopicNode;
+use App\Helper;
+use App\System;
+use ZCL\BT\Tree;
+use Zippy\Html\Form\Button;
+use Zippy\Html\Form\CheckBox;
+use Zippy\Html\Form\DropDownChoice;
+use Zippy\Html\Form\Form;
+use Zippy\Html\Form\TextArea;
+use Zippy\Html\Form\TextInput;
+use Zippy\Html\Label;
+use Zippy\Html\Link\BookmarkableLink;
+use Zippy\Html\Link\ClickLink;
+use Zippy\Html\Link\SubmitLink;
+use Zippy\Html\Panel;
+ 
 
 /**
  * Главная страница
  */
-class Main extends Base
+class Main extends \App\Pages\Base
 {
-
-    private $_edited = 0;
-    private $clipboard = array();
-    public $_tarr= array();
-    public $_sarr= array();
-    public $_farr = array();
-
     public function __construct() {
         parent::__construct();
 
-        //дерево
-        $tree = $this->add(new Tree("tree"));
-        $tree->onSelectNode($this, "onTree");
-
-        $this->ReloadTree();
-
-        // редактирование  узла
-        $this->add(new Form("nodeform"))->onSubmit($this, "OnNodeTitle");
-        $this->nodeform->add(new TextInput("editnodetitle"));
-        $this->nodeform->add(new TextInput("opname"));
-
-        //тулбар дерева
-        $this->add(new Button("treeadd"));
-        $this->add(new ClickLink("treeedit"));
-        $this->add(new ClickLink("treecut", $this, 'onNodeCut'));
-        $this->add(new ClickLink("treepaste", $this, 'onNodePaste'));
-        $this->add(new ClickLink("treedelete", $this, 'onNodeDelete'));
-
-
-        //тулбар топиков
-        $this->add(new ClickLink("topicadd", $this, 'onTopicAdd'));
-        $this->add(new ClickLink("topicedit", $this, 'onTopicEdit'));
-        $this->add(new ClickLink("topiccut", $this, 'onTopicCut'));
-        $this->add(new ClickLink("topiccopy", $this, 'onTopicCopy'));
-        $this->add(new ClickLink("topictag", $this, 'onTopicTag'));
-        $this->add(new ClickLink("topicpaste", $this, 'onTopicPaste'));
-        $this->add(new ClickLink("topicdelete", $this, 'onTopicDelete'));
-        $this->add(new BookmarkableLink("topiclink"));
-
-        //список  топиков
-        $topiclist = $this->add(new \Zippy\Html\DataList\DataView('topiclist', new \Zippy\Html\DataList\ArrayDataSource($this, '_tarr'), $this, "onRow"));
-        $topiclist->setCellClickEvent($this, 'onTopic');
-        $topiclist->setSelectedClass('table-success');
-        $topiclist->setPageSize(25);
-        $this->add(new \Zippy\Html\DataList\Pager("pag", $topiclist));
-
-        //содержимое топика
-        $this->add(new Label("content"));
-
-        //редактирование  топика
-        $this->add(new Form("editform"));
-        $this->editform->add(new TextInput("edittitle"));
-        $this->editform->add(new \ZCL\BT\Tags("edittags"));
-        $this->editform->add(new TextArea("editcontent"));
-        $this->editform->add(new ClickLink("editcancel", $this, "onTopicCancel"));
-        $this->editform->add(new SubmitLink("editsave"))->onClick($this, "onTopicSave");
-        $this->editform->add(new CheckBox("editispublic"));
- 
-
-        //аплоад файла
-        $this->add(new Form("fileform"))->onSubmit($this, "OnFile");
-        $this->fileform->add(new \Zippy\Html\Form\File("editfile"));
-        $this->add(new \Zippy\Html\DataList\DataView('filelist', new \Zippy\Html\DataList\ArrayDataSource(new \Zippy\Binding\ArrayPropertyBinding($this, '_farr')), $this, "onFileRow"));
-
-        //форма поиска
-        $this->add(new Form("sform"))->onSubmit($this, "OnSearch");
-        $this->sform->add(new TextInput("skeyword"));
-        $this->sform->add(new ClickLink("searchfav", $this, 'onSearchFav'));
-        $this->sform->add(new CheckBox("searchtitle"));
-        $this->sform->add(new DropDownChoice("searchtype"));
-
-        //список  результата поиска
-        $searchlist = $this->add(new \Zippy\Html\DataList\DataView('searchlist', new \Zippy\Html\DataList\ArrayDataSource($this, '_sarr'), $this, "onSearchRow"));
-        $searchlist->setCellClickEvent($this, 'onSearchTopic');
-        $searchlist->setSelectedClass('table-success');
-        $searchlist->setSelectedClass('table-success');
-
-        $this->add(new Panel("tpanel"));
-        $this->tpanel->add(new \Zippy\Html\Link\LinkList("taglist"))->onClick($this, 'OnTagList');
-        $this->tpanel->add(new ClickLink("setfav"))->onClick($this, 'onFav');
-        $this->tpanel->add(new Label("addfile"));
-
-        $this->_tvars['editor'] = false;
     }
 
-    //добавить топик
-    public function onTopicAdd($sender) {
+    public function onSearch($args, $post=null) {
+        $cr = json_decode($post) ;
+        $ret = array();
+        $l = array();
+        if(($cr->fav ?? false) == true) {
+            $l = TopicNode::searchFav();
+        }
+        if(strlen($cr->tag ??'') >0) {
+            $l = TopicNode::searchByTag($cr->tag)    ;
+        }
+        if(strlen($cr->text ??'') > 0) {
+            $l =  TopicNode::searchByText($cr->text, $cr->type??1, $cr->title??'');
+        }
 
-        $this->_edited = 0;
-        $this->editform->edittitle->setText('');
-        $this->editform->editcontent->setText('');
-        $this->editform->edittags->setTags(array());
-        $topic = new Topic();
-        $this->editform->edittags->setSuggestions($topic->getSuggestionTags());
-        $this->_tvars['editor'] = true;
-        \App\Session::getSession()->topic_id = $topic->topic_id;
+
+        foreach($l as $t) {
+            $ret[]=array(
+                 "topic_id" =>$t->topic_id,
+                 "node_id" =>$t->node_id,
+                 "title" =>$t->title,
+                 "hash" =>md5($t->topic_id . \App\Helper::getSalt()),
+                 "nodes" =>Node::nodes($t->node_id)
+            );
+        }
+
+        return json_encode($ret, JSON_UNESCAPED_UNICODE);
+
     }
 
-    //редактировать  топик
-    public function onTopicEdit($sender) {
-        $topic = Topic::load($this->topiclist->getSelectedRow()->getDataItem()->topic_id);
-        
-        $this->_edited = $topic->topic_id;
-        \App\Session::getSession()->topic_id = $topic->topic_id;
-        
-        $this->editform->edittitle->setText($topic->title);
-        $this->editform->edittags->setTags($topic->getTags());
-        $this->editform->edittags->setSuggestions($topic->getSuggestionTags());
-        $this->editform->editcontent->setText($topic->content);
-        $this->editform->editispublic->setChecked($topic->ispublic);
+    public function onDelFile($args, $post=null) {
 
-        $this->_tvars['editor'] = true;
+        Helper::deleteFile($args[0]);
+
+
     }
 
-    //сохраниение топика
-    public function onTopicSave($sender) {
+    public function onAddFile($args, $post=null) {
 
-        $topic = $this->_edited > 0 ? Topic::load($this->_edited) : new Topic();
-        $topic->title = $this->editform->edittitle->getText();
-        $topic->content = $this->editform->editcontent->getText();
-        $topic->ispublic = $this->editform->editispublic->isChecked();
-        if(strlen($topic->title)==0){
-            $this->setError('не введен заголовое');
+        $file =  $_FILES['editfile']  ;
+
+        if(strlen($file['tmp_name'] ?? '')==0) {
             return;
         }
+
+        Helper::addFile($file, $args[0]);
+
+
+    }
+
+    public function onFav($args, $post=null) {
+
+
+        $conn = \ZCL\DB\DB::getConnect();
+        if ($args[1]=="true") {
+            $conn->Execute("insert into  fav (topic_id,user_id) values ({$args[0]}," . System::getUser()->user_id . ") ");
+        } else {
+            $conn->Execute("delete from fav where topic_id={$args[0]} and  user_id= " . System::getUser()->user_id);
+        }
+
+    }
+
+    public function opTopic($args, $post=null) {
+        if($args[0] =="delete") {
+            if($args[3]=="true") {  //ссылка
+               $conn = \ZCL\DB\DB::getConnect();
+               $conn->Execute("delete from topicnode where topic_id={$args[1]} and node_id={$args[2]}" );
+ 
+            }
+            else {
+               Topic::delete($args[1]);
+            }
+        }
+        if($args[0] =="pastecopy") {      //вставка  как  перенос
+            $node = Node::Load($args[2]);
+            $topic = Topic::load($args[1]);
+
+            if ($topic->ispublic ==1 && $node->ispublic != 1) {
+                return "Нельзя добавлять публичный топик к приватному узлу";
+            }
+            $tn = TopicNode::getFirst("topic_id={$args[1]} and node_id={$args[3]}") ;
+            if($tn==null) return;
+            $topic->removeFromNode($args[3]);
+            $topic->addToNode($args[2],$tn->islink==1);
+
+        }
+        if($args[0] =="pastelink") {   //вставка  как  ссылка
+            $node = Node::Load($args[2]);
+            $topic = Topic::load($args[1]);
+            if($args[2]==$args[3]) {
+                return;
+            }
+            if ($topic->ispublic ==1 && $node->ispublic != 1) {
+                return "Нельзя добавлять публичный топик к приватному узлу";
+            }
+            $topic->addToNode($node->node_id,true);
+  
+        }
+        if($args[0] =="move") {   //вставка  как  ссылка
+            $node = Node::Load($args[2]);
+            $topic = Topic::load($args[1]);
+
+            if ($topic->ispublic ==1 && $node->ispublic != 1) {
+                return "Нельзя добавлять публичный топик к приватному узлу";
+            }
+            $newtopic = new Topic();
+            $newtopic->user_id = System::getUser()->user_id;
+            $newtopic->title = $topic->title;
+            $newtopic->content = $topic->content;
+            if ($node->node_id == $topic->node_id) {
+                $newtopic->title = $topic->title . " (Копия)";
+            }
+            $newtopic->detail = $topic->detail;
+            $newtopic->save();
+            $newtopic->addToNode($node->node_id);
+
+        }
+        if($args[0] =="new") {
+
+        }
+        if($args[0] =="edit") {
+
+        }
+
+        return "";
+    }
+
+    public function saveTopic($args, $post=null) {
+
+        $post = json_decode($post) ;
+        if($args[0] > 0) {
+            $topic = Topic::load($args[0]);
+        } else {
+            $topic = new  Topic();
+            $topic->user_id = System::getUser()->user_id;
+
+        }
+
+
+
+
+        $topic->title = $post->title;
+        $topic->content = $post->data;
+        $topic->ispublic = $post->ispublic ?1:0;
+
+        if (strlen($topic->title) == 0) {
+            return 'Не введен заголовок';
+        }
+ 
+
+        $node = Node::load($args[1]);
+        if ($topic->ispublic ==1 && $node->ispublic != 1) {
+            return "Нельзя добавлять пуьбличный топик  к приватному узлу " ;
+        }
+
+        $topic->updatedon=time();
         $topic->save();
-        $tags = $this->editform->edittags->getTags();
-        $topic->saveTags($tags);
-        // $this->topiclist->setSelectedRow($topic->topic_id);
-
-        $nodeid = $this->tree->selectedNodeId();
-        if ($this->_edited == 0) {
-            $topic->addToNode($nodeid);
+        $tags = trim($post->tags) ;
+        if(strlen($tags)>0) {
+            $topic->saveTags(explode(";", $tags));
         }
-         $this->ReloadTopic($nodeid);
 
 
-        $this->_tvars['editor'] = false;
-
-
-        //$this->ReloadTree();
-    }
-
-    public function onTopicCancel($sender) {
-        $this->_edited = 0;
-        $this->_tvars['editor'] = false;
-    }
-
-    //вырезать узел  в клипборд
-    public function onNodeCut($sender) {
-        $this->clipboard[0] = $this->tree->selectedNodeId();
-        ;
-        $this->clipboard[1] = 'node';
-    }
-
-    ///удалить узел
-    public function onNodeDelete($sender) {
-        $id = $this->tree->selectedNodeId();
-
-        Node::delete($id);
-        Topic::deleteByNode($id);
-        $this->ReloadTree();
-        $this->ReloadTopic(-1);
-        $this->tree->selectedNodeId(-1);
-        ;
-    }
-
-    //вставить узел
-    public function onNodePaste($sender) {
-        if ($this->clipboard[1] == 'node') {
-            $dest = Node::load($this->tree->selectedNodeId());
-
-            if ($this->clipboard[0] == $dest) {
-                return;
-            }
-            $node = Node::load($this->clipboard[0]);
-            if (strpos($dest->mpath, $node->mpath) === 0) {
-                $this->setError("Нельзя  переместить в своего наследника");
-                return;
-            }
-
-            $node->moveTo($dest->node_id);
-            $this->ReloadTree();
-            $this->clipboard = array();
+        if ($args[0] == 0) {
+            $topic->addToNode($args[1]);
         }
+
+
+
+        return "";
     }
 
-    //сохранить  узел после  редактирования
-    public function OnNodeTitle($form) {
-
-        $op = $form->opname->getText();
-        $id = $this->tree->selectedNodeId();
-        if ($op == 'add') {
+    public function opTree($args, $post=null) {
+        if($args[0] =="new") {
+            $id = $args[3] ;
             $parent = Node::load($id);
             $node = new Node();
             $node->pid = $id;
             $node->user_id = System::getUser()->user_id;
-            $node->title = $form->editnodetitle->getText();
-            $node->save();
-            $this->ReloadTopic($node->node_id);
-        }
-        if ($op == 'edit') {
-            $node = Node::load($id);
-            $node->title = $form->editnodetitle->getText();
-            $node->save();
-        }
-        // $form->editnodetitle->setText('');
+            $node->title = $args[1];
+            $node->ispublic = $args[2]=="true" ? 1 : 0;
+            if ($parent->ispublic == 0 && $node->ispublic == 1) {
 
-        $this->ReloadTree();
-        $this->tree->selectedNodeId($node->node_id);
+                return "Нельзя добавлять публичный узел к приватному" ;
+            }
+
+            $node->save();
+
+        }
+        if($args[0] =="edit") {
+            $id = $args[3] ;
+            $node = Node::load($id);
+            $node->title = $args[1];
+            $node->ispublic = $args[2]=="true" ? 1 : 0;
+            $parent = Node::load($node->pid);
+            if ($parent->ispublic == 0 && $node->ispublic == 1) {
+                return "Нельзя добавлять публичный узел к приватному" ;
+            }
+
+            $node->save();
+
+        }
+        if($args[0] =="delete") {
+            Node::delete($args[1]);
+            Topic::deleteByNode($args[1]);
+
+        }
+        if($args[0] =="paste") {
+            $id = $args[1] ;
+            $pid = $args[2] ;
+            $dest = Node::load($pid);
+
+            if ($pid == $id) {
+                return;
+            }
+            $node = Node::load($id);
+            if (strpos($dest->mpath, $node->mpath) === 0) {
+
+
+                return "Нельзя перемещать в  наследника";
+            }
+
+            $node->moveTo($dest->node_id);
+
+
+
+        }
+        return "";
     }
 
-    //загрузить дереаво
-    public function ReloadTree() {
-
-        $this->tree->removeNodes();
-        $user_id = System::getUser()->user_id;
+    public function getTree($args, $post=null) {
+        $expanded = strlen($args[0])>0 ? explode(",", $args[0]) : array();
+        $tree = array();
 
 
-        $itemlist = Node::find('user_id=' . $user_id, "pid,mpath,title");
+        $user = \App\System::getUser();
+        $w = "ispublic = 1 or  user_id={$user->user_id}  ";
+        if ($user->username == 'admin') {
+            $w = '';
+        }
+        $itemlist = Node::find($w, "pid,mpath,title");
         if (count($itemlist) == 0) { //добавляем  корень
             $root = new Node();
             $root->title = "//";
-            $root->user_id = $user_id;
+            $root->ispublic = 1;
+            $root->state = array('expanded'=>true) ;
+
             $root->save();
 
-            $itemlist = Node::find('user_id=' . $user_id, "pid,mpath,title");
+            $itemlist = Node::find($w, "pid,mpath,title");
         }
-        $first = null;
+
         $nodelist = array();
         foreach ($itemlist as $item) {
-            $node = new \ZCL\BT\TreeNode($item->title, $item->node_id);
-            $node->tag = $item->tcnt;  //количество  топиков в ветке
-            $parentnode = @$nodelist[$item->pid];
-
-            $this->tree->addNode($node, $parentnode);
-
-            $nodelist[$item->node_id] = $node;
-            if ($first == null)
-                $first = $node;
-        }
-    }
-
-    // загрузить список  топиков  для  выбранного узла
-    public function ReloadTopic($nodeid = 0) {
-        if ($nodeid == 0)
-            $nodeid = $this->tree->selectedNodeId();
-
-        $this->_tarr = Topic::findByNode($nodeid);
-        $this->topiclist->Reload();
-    }
-
-    //клик по  узлу
-    public function onTree($sender, $id) {
-        $this->_edited = 0;
-        $this->_tvars['editor'] = false;
-        $this->topiclist->setSelectedRow();
-        $this->ReloadTopic($id);
-        
-        $this->_sarr = array();
-        $this->searchlist->Reload();
-         
-        $this->sform->skeyword->setText('');
-          
-    }
-
-    //вывод строки  списка  топиков
-
-    public function onRow($row) {
-        $topic = $row->getDataitem();
-        $row->add(new Label('title', $topic->title));
-        //$row->add(new ClickLink('title', $this,'onTopic'));
-        $fav = $row->add(new Label('fav'));
-        $fav->setVisible($topic->favorites > 0);
-   
-    }
-
-    //клик по топику
-    public function onTopic($row) {
-
-       $topic = $row->getDataItem(); 
-       $this->_farr = \App\Entity\File::findByTopic($topic->topic_id);
-       $this->filelist->Reload();
-       $this->topiclist->setSelectedRow($row);
-       $this->topiclist->Reload();
-    }
-
-    //избранное
-    public function onFav($sender) {
-        $topic = Topic::load($this->topiclist->getSelectedRow()->getDataItem()->topic_id);
- 
-        $topic->favorites = $topic->favorites == 1 ? 0 : 1;
-        $topic->save();
-        //$this->ReloadTopic($this->tree->selectedNodeId());
-        $this->ReloadTopic();
-    }
-
-    //вырезать топик в  клипборд
-    public function onTopicCut($sender) {
-        $this->clipboard[0] = $this->topiclist->getSelectedRow()->getDataItem()->topic_id;
-        $this->clipboard[1] = 'topic';
-        $this->clipboard[2] = 'cut';
-        $this->clipboard[3] = $this->tree->selectedNodeId();
-    }
-
-    //копировать шорткат  на  топик
-    public function onTopicTag($sender) {
-        $this->clipboard[0] = $this->topiclist->getSelectedRow()->getDataItem()->topic_id;
-        $this->clipboard[1] = 'topic';
-        $this->clipboard[2] = 'tag';
-        $this->clipboard[3] = $this->tree->selectedNodeId();
-    }
-
-    //копировать топик
-    public function onTopicCopy($sender) {
-        $this->clipboard[0] = $this->topiclist->getSelectedRow()->getDataItem()->topic_id;
-        $this->clipboard[1] = 'topic';
-        $this->clipboard[2] = 'copy';
-        $this->clipboard[3] = $this->tree->selectedNodeId();
-    }
-
-    //удалить топик
-    public function onTopicDelete($sender) {
-        Topic::delete($this->topiclist->getSelectedRow()->getDataItem()->topic_id);
-        $this->topiclist->setSelectedRow();
-        $this->ReloadTopic($this->tree->selectedNodeId());
-        $this->ReloadTree();
-    }
-
-    //вставить   в  узел топик  или  шорткат
-    public function onTopicPaste($sender) {
-        if ($this->clipboard[1] != 'topic')
-            return;
 
 
-        $topic = Topic::load($this->clipboard[0]);
-        if ($this->clipboard[2] == 'cut') {
+            $node = new Node2();
+            $node->id = $item->node_id;
+            $node->pid = $item->pid;
+            $node->text = $item->title;
+            $node->ispublic = $item->ispublic==1;
+            $node->isowner = $item->user_id==$user->user_id || $user->username=='admin';
 
-            $topic->removeFromNode($this->clipboard[3]);
-            $topic->addToNode($this->tree->selectedNodeId());
-            $this->clipboard = array();
-        }
-        if ($this->clipboard[2] == 'copy') {
-            $newtopic = new Topic();
-            $newtopic->title = $topic->title;
-            if ($this->tree->selectedNodeId() == $this->clipboard[3]) {
-                $newtopic->title = $topic->title . " (копия)";
-            }
-            $newtopic->content = $topic->content;
-            $newtopic->save();
-            $newtopic->addToNode($this->tree->selectedNodeId());
-        }
-        if ($this->clipboard[2] == 'tag') {
-            $topic->addToNode($this->tree->selectedNodeId());
-        }
-
-        $this->ReloadTopic($this->tree->selectedNodeId());
-        $this->ReloadTree();
-        App::$app->setReloadPage();
-    }
-
-    //аплоад файла
-    public function OnFile($form) {
-        $file = $form->editfile->getFile();
-        if (strlen($file['tmp_name']) > 0) {
-            if (filesize($file['tmp_name']) / 1024 / 1024 > 10) {
-
-                $this->setError("Файл cлишком  большой");
-                return;
-            }
-        } else
-            return;
-
-        $f = new \App\Entity\File();
-        $f->content = file_get_contents($file['tmp_name']);
-        $f->topic_id = $this->topiclist->getSelectedRow()->getDataItem()->topic_id;
-        ;
-        $imagedata = @getimagesize($file['tmp_name']);
-        if (is_array($imagedata)) {
-            $f->mime = $imagedata['mime'];
-        }
-        $f->size = filesize($file['tmp_name']);
-        $f->filename = $file['name'];
-        // $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $f->save();
-
-        $this->_farr = \App\Entity\File::findByTopic($f->topic_id);
-        $this->filelist->Reload();
-    }
-
-    public function onFileRow($row) {
-        $file = $row->getDataItem();
-        $row->add(new ClickLink("filedel", $this, "onFileDel"));
-        $row->add(new BookmarkableLink("filelink", "/loadfile.php?id=" . $file->file_id))->setValue($file->filename);
-    }
-
-    public function onFileDel($sender) {
-        $file = $sender->getOwner()->getDataItem();
-        \App\Entity\File::delete($file->file_id);
-        $this->_farr = \App\Entity\File::findByTopic($file->topic_id);
-        $this->filelist->Reload();
-    }
-
-    //обработчик поиска
-    public function OnSearch($form) {
-        $text = $form->skeyword->getText();
-        $t = $form->searchtype->getValue();
-        if ($text == "") {
-            $this->setError('Enter text!');
-            return;
-        }
-
-        $this->_sarr = TopicNode::searchByText($text, $t, $form->searchtitle->isChecked());
-        $this->searchlist->Reload();
-    }
-
-    //обработчик  поиска  по тегу
-    public function OnTagList($sender) {
-        $text = $sender->getSelectedValue();
-        $this->_sarr = TopicNode::searchByTag($text);
-        $this->searchlist->Reload();
-    }
-
-    //обработчик  поиска  избранных
-    public function onSearchFav($sender) {
-
-        $this->_sarr = TopicNode::searchFav();
-        $this->searchlist->Reload();
-    }
-
-    //вывод строки  списка  поиска
-    public function onSearchRow($row) {
-        $item = $row->getDataitem();
-
-
-        $row->add(new Label('stitle', $item->title));
-        $row->add(new Label('snodes', $item->nodes()));
-    }
-
-    //выбор  строки  из  результата  поиска
-    public function onSearchTopic($row ) {
-
-        $topic= $row->getDataItem()  ;
-        $this->tree->selectedNodeId(intval($topic->node_id));
-   
-        $this->ReloadTopic($topic->node_id);
-        $trows = $this->topiclist->getDataRows() ;
-        foreach($trows as $tr) {
-            $t = $tr->getDataItem();
-            if($t->topic_id==$topic->topic_id) {
-                 $this->onTopic($tr) ;
-            }
-        }
-        
-        $this->searchlist->setSelectedRow($row);        
-        $this->searchlist->Reload(false); 
-    }
-
-    /**
-     * @see WebPage
-     * 
-     */
-    protected function beforeRender() {
-        parent::beforeRender();
-
-        $nodeid = $this->tree->selectedNodeId();
-        $node = Node::load($nodeid);
-        $topicid=0;
-        $row =$this->topiclist->getSelectedRow();
-        
-        if($row instanceof \Zippy\Html\DataList\DataRow){
-           $topicid = $row->getDataItem()->topic_id; 
-        }
-        
-        $topic = Topic::load($topicid);
-        if($topic == false){
-            $topicid =0;
-        }
-
-        $nodecp = $this->clipboard[1] == 'node' ? $this->clipboard[0] : 0;
-        $topiccp = $this->clipboard[1] == 'topic' ? $this->clipboard[0] : 0;
-
-        $this->tpanel->setVisible(false);
-        $this->treeadd->setVisible(false);
-        $this->treeedit->setVisible(false);
-        $this->treecut->setVisible(false);
-        $this->treepaste->setVisible(false);
-        $this->treedelete->setVisible(false);
-        $this->topicadd->setVisible(false);
-        $this->topicedit->setVisible(false);
-        $this->topiccut->setVisible(false);
-        $this->topiccopy->setVisible(false);
-        $this->topictag->setVisible(false);
-        $this->topicpaste->setVisible(false);
-        $this->topicdelete->setVisible(false);
-        $this->topiclink->setVisible(false);
-        $this->tpanel->setfav->setVisible(false);
-        $this->tpanel->addfile->setVisible(false);
-
-        if ($nodeid > 0) {   //есть выделенный узел
-            $this->treeadd->setVisible(true);
-            $this->topicadd->setVisible(true);
-            $this->treeedit->setVisible(true);
-
-            if ($nodecp > 0) {
-                $this->treepaste->setVisible(true);
-            }
-
-            if ($node->pid > 0) {   //не корень
-                $this->treecut->setVisible(true);
-                $this->treedelete->setVisible(true);
-            }
-        }
-
-        if ($topiccp > 0 && $nodeid > 0) {
-            $this->topicpaste->setVisible(true);
-        }
-
-        $this->content->setText('');
-        $this->tpanel->taglist->Clear();
-        if ($topicid > 0) {
-            $this->tpanel->setVisible(true);
-            $this->content->setText($topic->content, true);
-
-            $this->topicedit->setVisible(true);
-            $this->topiccut->setVisible(true);
-            $this->topiccopy->setVisible(true);
-            $this->topictag->setVisible(true);
-            $this->topicdelete->setVisible(true);
-              if ($topic->ispublic > 0) {
-            $this->topiclink->setVisible(true);
-            $this->topiclink->setLink("/topic/" . $topicid);
-              }
-            $this->tpanel->addfile->setVisible(true);
-            ;
-            $this->tpanel->setfav->setVisible(true);
-            ;
-            if ($topic->favorites > 0) {
-                $this->tpanel->setfav->setAttribute("style", "color:brown;");
+             if ($node->ispublic  ) {
+                $node->icon = 'fa fa-users fa-xs';
             } else {
-                $this->tpanel->setfav->setAttribute("style", "color:gray;");
+                $node->icon = 'fa fa-lock fa-xs';
+            }
+            if ($node->pid==0  ) {
+                $node->icon='';
+                $node->isowner=false;
             }
 
-            $tags = $topic->getTags();
-            foreach ($tags as $tag) {
-                $this->tpanel->taglist->addClickLink($tag, $tag);
+            if(in_array($node->id, $expanded)) {    //восстанавливаем развернутые
+                $node->state = array('expanded'=>true) ;
+            }
+
+            if(($nodelist[$node->pid] ??null) instanceof Node2) {
+                if(!is_array($nodelist[$node->pid]->nodes)) {
+                    $nodelist[$node->pid]->nodes  = array();
+                }
+                $nodelist[$node->pid]->nodes[]=$node;
+            }
+            $nodelist[$node->id] = $node;
+
+
+        }
+        foreach($nodelist as $n) {
+            if($n->pid==0) {
+                $n->ispublic = 1;
+                $n->icon = 'fa fa-users fa-xs';
+                $tree[]=$n;
             }
         }
 
-        if ($topiccp > 0) {
-            if ($this->clipboard[2] != 'copy' && $this->clipboard[3] == $this->tree->selectedNodeId()) {
-                //в  ту  же  ветку  можно только  копировать
-                $this->topicpaste->setVisible(false);
-            }
-        }
+
+
+        return json_encode($tree, JSON_UNESCAPED_UNICODE);
+
     }
 
+    public function loadTopic($args, $post=null) {
+        $t = Topic::load($args[0]) ;
+
+
+        $ret = array();
+        $ret['ispublic'] = $t->ispublic==1;
+        $ret['content'] = $t->content;
+        $ret['tags'] = $t->getTags();
+        $ret['sugs'] = $t->getSuggestionTags();
+        $ret['files'] = [];
+       
+       
+        foreach(Helper::findFileByTopic($t->topic_id) as $f) {
+            $ret['files'][] = array('file_id'=>$f->file_id,
+             'filename'=>$f->filename ,
+             'link'=>"/loadfile.php?id=" . $f->file_id
+             );
+        }
+
+
+
+        return json_encode($ret, JSON_UNESCAPED_UNICODE);
+
+    }
+ 
+    public function loadTopics($args, $post=null) {
+        $user = \App\System::getUser();
+  
+        $conn = \ZCL\DB\DB::getConnect();
+
+        $favorites = [];
+        $res = $conn->Execute("select topic_id from fav where user_id= " . System::getUser()->user_id);
+        foreach ($res as $r) {
+            $favorites[] = $r['topic_id'];
+        }
+        $links = [];
+        $res = $conn->Execute("select topic_id from topicnode where islink=1 and  node_id= ".$args[0] );
+        foreach ($res as $r) {
+            $links[] = $r['topic_id'];
+        }
+
+
+        $arr = array()  ;
+        foreach(Topic::findByNode($args[0]) as $t) {
+            $islink =in_array($t->topic_id, $links)  ;
+            $arr[]=array(
+             "title"=>$t->title,
+             "fav"=>in_array($t->topic_id, $favorites),
+             "topic_id"=>$t->topic_id,
+             "ispublic"=>$t->ispublic==1,
+             'canedit' => $user->user_id==$t->user_id,
+     
+             'isowner' => $user->user_id==$t->user_id,
+             'islink' =>$islink ,
+              
+             "hash" =>md5($t->topic_id . \App\Helper::getSalt()),
+             
+             );
+        }
+
+        return json_encode($arr, JSON_UNESCAPED_UNICODE);
+
+    }
+
+}
+
+class Node2
+{
+    public $id;
+    public $pid;
+    public $icon;
+    public $title;
+    public $ispublic;
+    public $isowner;
+    public $nodes = null;
+    public $state = array();
 }

@@ -7,6 +7,7 @@ use \App\System;
 use \App\Helper;
 use \Zippy\Html\Form\Form;
 use \Zippy\Html\Form\TextInput;
+use \Zippy\Html\Form\CheckBox;
 use \Zippy\Html\Form\DropDownChoice;
 use \Zippy\Html\Panel;
 use \Zippy\Html\Label;
@@ -25,8 +26,8 @@ class Users extends \App\Pages\Base
     public function __construct() {
         parent::__construct();
 
-        if (System::getUser()->username != 'admin') {
-            Application::RedirectURI("/");
+        if (System::getUser()->userlogin != 'admin') {
+          \App\Application::RedirectURI("/");
             return;
         }
 
@@ -34,8 +35,8 @@ class Users extends \App\Pages\Base
         $plist->add(new ClickLink('adduser',$this,'OnAddNew')) ;
         
 
-        $this->_ds = new EntityDataSource("\\App\\Entity\\User", "username <>  'admin'", "username asc");
-        $plist->add(new DataView("userrow", $this->_ds, $this, 'OnAddUserRow'));
+        $this->_ds = new EntityDataSource("\\App\\Entity\\User", "userlogin <>  'admin'", "userlogin asc");
+        $plist->add(new DataView("userrow", $this->_ds, $this, 'OnRow'));
       
         $plist->userrow->Reload();
 
@@ -44,7 +45,10 @@ class Users extends \App\Pages\Base
         
         $pedit->add(new  Form('editform'))->onSubmit($this,'onSave');
         $pedit->editform->add(new TextInput('editname')) ;
+        $pedit->editform->add(new TextInput('editlogin')) ;
         $pedit->editform->add(new TextInput('editpass')) ;
+        $pedit->editform->add(new TextInput('editconfirm')) ;
+        $pedit->editform->add(new CheckBox('editdisabled')) ;
         
         
         $pedit->add(new ClickLink('cancel',$this,'OnCancel')) ;
@@ -57,11 +61,14 @@ class Users extends \App\Pages\Base
         $this->plist->userrow->Reload();
     }
 
-    public function OnAddUserRow(\Zippy\Html\DataList\DataRow $datarow) {
+    public function OnRow(\Zippy\Html\DataList\DataRow $datarow) {
         $item = $datarow->getDataItem();
-        $datarow->add(new  ClickLink("username", $this, 'OnEdit'))->setValue($item->username);
+        $datarow->add(new  Label("userlogin",$item->userlogin));
+        $datarow->add(new  Label("username",$item->username));
+        $datarow->add(new  ClickLink("edit", $this, 'OnEdit'))    ;
         $datarow->add(new  ClickLink("del", $this, 'OnRemove'))    ;
-    }
+        $datarow->setAttribute('style', $item->disabled == 1 ? 'color: #aaa' : null);
+      }
   
     public function OnAddNew($sender) {
         $this->_user = new User();  
@@ -82,23 +89,50 @@ class Users extends \App\Pages\Base
 
         $this->plist->setVisible(false);
         $this->pedit->setVisible(true);
+        $this->pedit->editform->clean();        
         $this->pedit->editform->editname->setText($this->_user->username);
-        $this->pedit->editform->editpass->setText('');
+        $this->pedit->editform->editlogin->setText($this->_user->userlogin);
+        $this->pedit->editform->editdisabled->setChecked($this->_user->disabled==1);
+    
         
         
     }
     
     public function onSave($sender) {
+        
+        $this->_user->userlogin = $sender->editlogin->getText();
+        $this->_user->username = $sender->editname->getText();
+        $this->_user->disabled = $sender->editdisabled->isChecked()?1:0 ;
+       
+        $user = User::getByLogin($this->_user->userlogin);
+        if ($user instanceof User) {
+            if ($user->user_id != $this->_user->user_id) {
+                $this->setError('Неуникальный логин');
+                return;
+            }
+        }        
+        
         $pass=$sender->editpass->getText();
+        $confirm=$sender->editconfirm->getText();
         if(strlen($pass)==0 && $this->_user->user_id==0) {
             $this->setError('Не задан  пароль');
             return;
         }
-        $this->_user->username = $sender->editname->getText();
         
         if(strlen($pass)>0 ) {
-            $this->_user->userpass= $pass;
-        }
+            if(strlen($confirm)==0 ) {
+               $this->setError('Невкрное подтверждение ');
+               return;
+            }
+            if($confirm != $pass ) {
+               $this->setError('Невкрное подтверждение ');
+               return;
+            }
+            $this->_user->userpass=  (\password_hash($pass, PASSWORD_DEFAULT));;
+        }       
+        
+         
+ 
         
         if($this->_user->username=='admin') {
             $this->setError('Недопустимое имя');

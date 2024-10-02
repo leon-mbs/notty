@@ -1,6 +1,6 @@
 body {
     font-family: "Roboto", "Helvetica Neue";
-    background-color: #FaFaFa;
+ 
 }
 
 .seltopic {
@@ -10,11 +10,14 @@ body {
 
 .toolbar {
     font-size: 22px;
-    background-color: #eaeaea;
+   
 }
 
 
+.dark-mode a {
+   color: #fff;
+}
 
-#tmenu a {
-    color: #000;
+a{
+    cursor:pointer;
 }

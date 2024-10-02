@@ -3,6 +3,7 @@
 namespace App;
 
 use \App\Entity\User;
+ 
 use \ZCL\DB\DB as DB;
 
 /**
@@ -20,7 +21,7 @@ class Helper
      */
     public static function login($login, $password = null) {
 
-        $user = User::getFirst("  username='{$login}' ");
+        $user = User::getFirst("  userlogin='{$login}' ");
 
         if ($user == null)
             return false;
@@ -44,62 +45,80 @@ class Helper
         return count($list) > 0;
     }
 
-    public static function loadEmail($template, $keys = array()) {
-        global $logger;
+ 
 
-        $templatepath = _ROOT . 'templates/email/' . $template . '.tpl';
-        if (file_exists(strtolower($templatepath)) == false) {
-
-            $logger->error($templatepath . " is wrong");
-            return "";
+    public static function setKeyVal($key, $data = null) {
+        if(strlen($key) == 0) {
+            return;
         }
-        $template = @file_get_contents(strtolower($templatepath));
-
-        $m = new \Mustache_Engine();
-        $template = $m->render($template, $keys);
-
-
-        return $template;
-    }
-
-    public static function sendLetter($template, $email, $subject = "") {
-
-
-        $_config = parse_ini_file(_ROOT . 'config/config.ini', true);
-
-
-        $mail = new \PHPMailer();
-        $mail->setFrom($_config['common']['emailfrom'], 'Биржа jobber');
-        $mail->addAddress($email);
-        $mail->Subject = $subject;
-        $mail->msgHTML($template);
-        $mail->CharSet = "UTF-8";
-        $mail->IsHTML(true);
-
-
-        $mail->send();
-        /*
-
-          $from_name = '=?utf-8?B?' . base64_encode("Биржа jobber") . '?=';
-          $subject = '=?utf-8?B?' . base64_encode($subject) . '?=';
-          mail(
-          $email,
-          $subject,
-          $template,
-          "From: " . $from_name." <{$_config['common']['emailfrom']}>\r\n".
-          "Content-type: text/html; charset=\"utf-8\""
-          );
-         */
-    }
-
-    public static function getCategoryList() {
-        $list = array();
-        $conn = \ZCL\DB\DB::getConnect();
-        $rs = $conn->Execute("select * from categories order  by  categoryname");
-        foreach ($rs as $row) {
-            $list[$row['category_id']] = $row['categoryname'];
+        $conn = \ZDB\DB::getConnect();
+        $conn->Execute("delete  from  keyval  where  keyd=" . $conn->qstr($key));
+        if($data === null) {
+            return;
         }
-        return $list;
+        $conn->Execute("insert into keyval  (  keyd,vald)  values (" . $conn->qstr($key) . "," . $conn->qstr($data) . ")");
+
+
+    } 
+    
+    public static function getKeyVal($key, $def = "") {
+        if(strlen($key) == 0) {
+            return;
+        }
+        $conn = \ZDB\DB::getConnect();
+
+        $ret = $conn->GetOne("select vald from  keyval  where  keyd=" . $conn->qstr($key));
+
+        if(strlen($ret) == 0) {
+            $ret = "";
+        }
+
+        if($ret == '' && $def != '') {
+            $ret = $def;
+        }
+
+        return $ret;
+    }   
+    
+  //"соль" для  шифрования
+    public static function getSalt() {
+        $salt = self::getKeyVal('salt');
+        if(strlen($salt ?? '') == 0) {
+            $salt = '' . rand(1000, 999999);
+            self::setKeyVal('salt', $salt);
+        }
+        return $salt;
+    }
+     
+  public static function addFile($file, $topic_id) {
+   
+       
+        $f = new  \App\Entity\File();
+        $f->topic_id = $topic_id;
+        $f->filename = $file['name'];
+        $f->content = file_get_contents($file['tmp_name']);
+        $f->save();
+ 
     }
 
+    public static function deleteFile($file_id) {
+        $conn = \ZDB\DB::getConnect();
+        $conn->Execute("delete  from  files  where  file_id={$file_id}");
+
+    }
+
+    public static function findFileByTopic($topic_id) {
+        $list= \App\Entity\File::find("topic_id=".$topic_id) ;
+
+        $ret = array();
+        foreach ($list as $f) {
+           
+            $f->content=null;;
+
+            $ret[] =  $f;
+        }
+
+        return $ret;
+    }
+        
 }
