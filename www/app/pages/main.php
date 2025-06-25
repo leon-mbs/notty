@@ -123,7 +123,7 @@ class Main extends \App\Pages\Base
             if($args[2]==$args[3]) {
                 return;
             }
-            if ($topic->ispublic ==1 && $node->ispublic != 1) {
+            if ($topic->ispublic ==1 && $node->ispublic == 0) {
                 return "Нельзя добавлять публичный топик к приватному узлу";
             }
             $topic->addToNode($node->node_id,true);
@@ -133,7 +133,7 @@ class Main extends \App\Pages\Base
             $node = Node::Load($args[2]);
             $topic = Topic::load($args[1]);
 
-            if ($topic->ispublic ==1 && $node->ispublic != 1) {
+            if ($topic->ispublic ==1 && $node->ispublic ==0) {
                 return "Нельзя добавлять публичный топик к приватному узлу";
             }
             $newtopic = new Topic();
@@ -183,8 +183,8 @@ class Main extends \App\Pages\Base
  
 
         $node = Node::load($args[1]);
-        if ($topic->ispublic ==1 && $node->ispublic != 1) {
-            return "Нельзя добавлять пуьбличный топик  к приватному узлу " ;
+        if ($topic->ispublic ==1 && $node->ispublic ==0) {
+            return "Нельзя добавлять публичный топик  к приватному узлу " ;
         }
 
         $topic->updatedon=time();
