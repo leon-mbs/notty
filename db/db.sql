@@ -163,4 +163,4 @@ FROM ((topics
 
 
         
-INSERT INTO users (  userlogin,   userpass) VALUES(  'admin',   'admin');
+INSERT INTO users (  userlogin,  username,   userpass) VALUES(  'admin', 'admin',   'admin');

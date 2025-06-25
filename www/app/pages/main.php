@@ -104,7 +104,7 @@ class Main extends \App\Pages\Base
                Topic::delete($args[1]);
             }
         }
-        if($args[0] =="pastecopy") {      //вставка  как  перенос
+        if($args[0] =="move") {     
             $node = Node::Load($args[2]);
             $topic = Topic::load($args[1]);
 
@@ -123,22 +123,23 @@ class Main extends \App\Pages\Base
             if($args[2]==$args[3]) {
                 return;
             }
-            if ($topic->ispublic ==1 && $node->ispublic != 1) {
+            if ($topic->ispublic ==1 && $node->ispublic == 0) {
                 return "Нельзя добавлять публичный топик к приватному узлу";
             }
             $topic->addToNode($node->node_id,true);
   
         }
-        if($args[0] =="move") {   //вставка  как  ссылка
+        if($args[0] =="pastecopy") {     //вставка  как  копия
             $node = Node::Load($args[2]);
             $topic = Topic::load($args[1]);
 
-            if ($topic->ispublic ==1 && $node->ispublic != 1) {
+            if ($topic->ispublic ==1 && $node->ispublic ==0) {
                 return "Нельзя добавлять публичный топик к приватному узлу";
             }
             $newtopic = new Topic();
             $newtopic->user_id = System::getUser()->user_id;
             $newtopic->title = $topic->title;
+            $newtopic->ispublic = $topic->ispublic;
             $newtopic->content = $topic->content;
             if ($node->node_id == $topic->node_id) {
                 $newtopic->title = $topic->title . " (Копия)";
@@ -182,8 +183,8 @@ class Main extends \App\Pages\Base
  
 
         $node = Node::load($args[1]);
-        if ($topic->ispublic ==1 && $node->ispublic != 1) {
-            return "Нельзя добавлять пуьбличный топик  к приватному узлу " ;
+        if ($topic->ispublic ==1 && $node->ispublic ==0) {
+            return "Нельзя добавлять публичный топик  к приватному узлу " ;
         }
 
         $topic->updatedon=time();

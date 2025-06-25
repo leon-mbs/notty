@@ -20,7 +20,8 @@ class Helper
      * @return  boolean
      */
     public static function login($login, $password = null) {
-
+        $password = trim($password) ;
+        
         $user = User::getFirst("  userlogin='{$login}' ");
 
         if ($user == null)
